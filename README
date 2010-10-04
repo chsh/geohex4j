@@ -32,9 +32,9 @@ http://twitter.com/chshii
   GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
   // zone1.code -> "jjdK3"
   GeoHex.Zone zone2 = GeoHex.getZoneByCode("jjdK3");
-  // z.lat -> 35.780516755235475
-  // z.lon -> 139.57031250000003
-  // z.level -> 9
+  // zone2.lat -> 35.780516755235475
+  // zone2.lon -> 139.57031250000003
+  // zone2.level -> 9
 
 # LICENSE
 
