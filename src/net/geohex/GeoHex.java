@@ -1,217 +1,284 @@
 package net.geohex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GeoHex {
-	public static final String VERSION = "1.0.0";
+	public  static final String VERSION = "2.03";
 	
-	public static final String H_KEY = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX";
+	// *** Share with all instances ***
+	public static final String h_key = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public static final double h_base = 20037508.34;
+	public static final double h_deg = Math.PI*(30.0/180.0);
+	public static final double h_k = Math.tan(h_deg);
 
-	public static class Zone {
-		public static final int DEFAULT_LEVEL = 7;
-		public double lat, lon;
-		public int level;
-		public Zone(double lat, double lon, int level) {
+	// *** Share with all instances ***
+	// private static
+	private static double calcHexSize(int level) {
+		return h_base/Math.pow(2, level)/3;
+	}
+
+	// private class
+	public static final class Zone {
+		public double lat;
+		public double lon;
+		public double x; // ?
+		public double y; // ?
+		public String code;
+
+		public Zone(double lat, double lon, double x, double y, String code) {
 			this.lat = lat;
 			this.lon = lon;
-			this.level = level;
-			verifyLatLonRange(this.lat, this.lon, this.level);
-		}
-		public Zone(double lat, double lon) {
-			this.lat = lat;
-			this.lon = lon;
-			this.level = DEFAULT_LEVEL;
-			verifyLatLonRange(this.lat, this.lon, this.level);
-		}
-		private void verifyLatLonRange(double lat, double lon, int level) {
-			if (lat < -90 || lat > 90) 
-				throw new IllegalArgumentException("latitude must be between -90 and 90");
-			if (lon < -180 || lon > 180)
-				throw new IllegalArgumentException("longitude must be between -180 and 180");
-			if (level < 1 || level > 60) 
-				throw new IllegalArgumentException("level must be between 1 and 60");
-		}
-		@Override
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			sb.append('{');
-			sb.append(lat);
-			sb.append(',');
-			sb.append(lon);
-			sb.append("}:");
-			sb.append(level);
-			return sb.toString();
-		}
-	}
-	public static final double MIN_X_LON = 122930.0; // 与那国島
-	public static final double MIN_X_LAT = 24448.0;
-	public static final double MIN_Y_LON = 141470.0; // 南硫黄島	
-	public static final double  MIN_Y_LAT = 24228.0;
-	public static final int H_GRID = 1000;
-	public static final double H_SIZE = 0.5;
-
-	private String code;
-	private Zone zone;
-	
-	public String getCode() { return code; }
-	public Zone getZone() { return zone; }
-	
-	public GeoHex(double lat, double lon, int level) {
-		this.zone = new Zone(lat, lon, level);
-		this.code = encode(this.zone);
-	}
-	public GeoHex(Zone zone) {
-		this.zone = zone;
-		this.code = encode(this.zone);
-	}
-	public GeoHex(String code) {
-		this.code = code;
-		this.zone = decode(this.code);
-	}
-	
-	public static String encode(double lat, double lon, int level) {
-		return encode(new Zone(lat, lon, level));
-	}
-	public static String encode(Zone zone) {
-	    double lon_grid = zone.lon * H_GRID;
-	    double lat_grid = zone.lat * H_GRID;
-	    double unit_x   = 6.0  * zone.level * H_SIZE;
-	    double unit_y   = 2.8  * zone.level * H_SIZE;
-	    double h_k      = ((double)Math.round( (1.4 / 3) * H_GRID) / H_GRID);
-
-	    double base_x   = Math.floor( (MIN_X_LON + MIN_X_LAT / h_k      ) / unit_x);
-	    double base_y   = Math.floor( (MIN_Y_LAT - h_k      * MIN_Y_LON) / unit_y);
-	    double h_pos_x  = ( lon_grid + lat_grid / h_k     ) / unit_x - base_x;
-	    double h_pos_y  = ( lat_grid - h_k      * lon_grid) / unit_y - base_y;
-	    long h_x_0    = (long)Math.floor(h_pos_x);
-	    long h_y_0    = (long)Math.floor(h_pos_y);
-	    double h_x_q    = Math.floor((h_pos_x - h_x_0) * 100) / 100;
-	    double h_y_q    = Math.floor((h_pos_y - h_y_0) * 100) / 100;
-	    long h_x      = Math.round(h_pos_x);
-	    long h_y      = Math.round(h_pos_y);
-
-	      
-	    if ( h_y_q > -h_x_q + 1 ) { 
-	      if ( h_y_q < (2 * h_x_q ) &&  h_y_q > (0.5 * h_x_q ) ) {
-	        h_x = h_x_0 + 1;
-	        h_y = h_y_0 + 1;
-	      }
-	    } else if ( h_y_q < -h_x_q + 1 ) { 
-	    	if( (h_y_q > (2 * h_x_q ) - 1 ) && ( h_y_q < ( 0.5 * h_x_q ) + 0.5 ) ) { 
-	    		h_x = h_x_0;
-	    		h_y = h_y_0;
-	    	}
-	    }
-	    return hyhx2geohex( h_y, h_x, zone.level);
-	}
-	private static String hyhx2geohex(double h_y, double h_x, int level) { 
-	    long h_x_100 = (long)Math.floor( h_x / 3600);
-	    long h_x_10  = (long)Math.floor((h_x % 3600) / 60);
-	    long h_x_1   = (long)Math.floor((h_x % 3600) % 60);
-	    long h_y_100 = (long)Math.floor( h_y / 3600);
-	    long h_y_10  = (long)Math.floor((h_y % 3600) / 60);
-	    long h_y_1   = (long)Math.floor((h_y % 3600) % 60);
-	    
-	    long[] indexes = null;
-
-	    if ( level < 7 ) {
-	    	indexes = new long[]{ level % 60, h_x_100, h_y_100, h_x_10, h_y_10, h_x_1, h_y_1 };
-	    } else if ( level == 7 ) { 
-	    	indexes = new long[]{ h_x_10, h_y_10, h_x_1, h_y_1 };
-	    } else { 
-	    	indexes = new long[]{ level % 60, h_x_10, h_y_10, h_x_1, h_y_1 };
-	    }
-	    return codeFrom(H_KEY, indexes);
-	}
-	private static String codeFrom(String string, long[] points) {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < points.length; i++) {
-			sb.append(string.charAt((int)points[i]));
-		}
-		return sb.toString();
-	}
-
-	public static Zone decode(String code) {
-		HyHx hh = geohex2hyhx(code);
-	    
-	    double h_lat = ( hh.h_k   * ( hh.h_x + hh.base_x ) * hh.unit_x + ( hh.h_y + hh.base_y ) * hh.unit_y ) / 2;
-	    double h_lon = ( h_lat - ( hh.h_y + hh.base_y ) * hh.unit_y ) / hh.h_k;
-	    double lat      = h_lat / H_GRID;
-	    double lon      = h_lon / H_GRID;
-
-	    return new Zone(lat, lon, hh.level); 
-	}
-
-	private static final class HyHx {
-		public double h_y;
-		public double h_x;
-		public int level;
-		public double unit_x;
-		public double unit_y;
-		public double h_k;
-		public double base_x;
-		public double base_y;
-		public HyHx(double h_y, double h_x, int level, double unit_x, double unit_y,
-				double h_k, double base_x, double base_y) {
-			this.h_y = h_y;
-			this.h_x = h_x;
-			this.level = level;
-			this.unit_x = unit_x;
-			this.unit_y = unit_y;
-			this.h_k = h_k;
-			this.base_x = base_x;
-			this.base_y = base_y;
-		}
-	}
-
-	private static final class Level {
-		public int level;
-		public int c_length;
-		public char[] code;
-		public Level(int level, int c_length, char[] code) {
-			this.level = level;
-			this.c_length = c_length;
+			this.x = x;
+			this.y = y;
 			this.code = code;
 		}
+		public int getLevel() {
+			return h_key.indexOf(this.code.charAt(0));
+		}
+		public double getHexSize() {
+			return calcHexSize(this.getLevel());
+		}
+		public Loc[] getHexCoords() {
+			double h_lat = this.lat;
+			double h_lon = this.lon;
+			XY h_xy = loc2xy(h_lon, h_lat);
+			double h_x = h_xy.x;
+			double h_y = h_xy.y;
+			double h_deg = Math.tan(Math.PI * (60 / 180));
+			double h_size = this.getHexSize();
+			double h_top = xy2loc(h_x, h_y + h_deg *  h_size).lat;
+			double h_btm = xy2loc(h_x, h_y - h_deg *  h_size).lat;
+	
+			double h_l = xy2loc(h_x - 2 * h_size, h_y).lon;
+			double h_r = xy2loc(h_x + 2 * h_size, h_y).lon;
+			double h_cl = xy2loc(h_x - 1 * h_size, h_y).lon;
+			double h_cr = xy2loc(h_x + 1 * h_size, h_y).lon;
+			return new Loc[]{
+				new Loc(h_lat, h_l),
+				new Loc(h_top, h_cl),
+				new Loc(h_top, h_cr),
+				new Loc(h_lat, h_r),
+				new Loc(h_btm, h_cr),
+				new Loc(h_btm, h_cl)
+			};
+		}
 	}
 	
-	private static HyHx geohex2hyhx(String hexcode) {
-		Level l = geohex2level(hexcode);
+	public static final String encode(double lat, double lon, int level) {
+		return getZoneByLocation(lat, lon, level).code;
+	}
+	public static final Zone decode(String code) {
+		return getZoneByCode(code);
+	}
 
-		double unit_x = 6.0 * l.level * H_SIZE;
-	    double unit_y = 2.8 * l.level * H_SIZE;
-	    double h_k    = ( (double)Math.round( ( 1.4 / 3 ) * H_GRID ) ) / H_GRID;
-	    double base_x = Math.floor( ( MIN_X_LON + MIN_X_LAT / h_k ) / unit_x );
-	    double base_y = Math.floor( ( MIN_Y_LAT - h_k * MIN_Y_LON ) / unit_y );
+	// public static
+	public static final Zone getZoneByLocation(double lat, double lon, int level) {
+		if (lat < -90 || lat > 90) 
+			throw new IllegalArgumentException("latitude must be between -90 and 90");
+		if (lon < -180 || lon > 180)
+			throw new IllegalArgumentException("longitude must be between -180 and 180");
+		if (level < 0 || level > 24) 
+			throw new IllegalArgumentException("level must be between 1 and 60");
 
-	    double h_x, h_y;
-	    if ( l.c_length > 5 ) {
-	      h_x = H_KEY.indexOf(l.code[0]) * 3600 + H_KEY.indexOf(l.code[2]) * 60 + H_KEY.indexOf(l.code[4]);
-	      h_y = H_KEY.indexOf(l.code[1]) * 3600 + H_KEY.indexOf(l.code[3]) * 60 + H_KEY.indexOf(l.code[5]);
-	    } else { 
-	      h_x = H_KEY.indexOf(l.code[0]) * 60   + H_KEY.indexOf(l.code[2]);
-	      h_y = H_KEY.indexOf(l.code[1]) * 60   + H_KEY.indexOf(l.code[3]);
-	    }
-	    
-	    return new HyHx(h_y, h_x, l.level, unit_x, unit_y, h_k, base_x, base_y);
+		double h_size = calcHexSize(level);
+
+		XY z_xy = loc2xy(lon, lat);
+		double lon_grid = z_xy.x;
+		double lat_grid = z_xy.y;
+		double unit_x = 6 * h_size;
+		double unit_y = 6 * h_size * h_k;
+		double h_pos_x = (lon_grid + lat_grid / h_k) / unit_x;
+		double h_pos_y = (lat_grid - h_k * lon_grid) / unit_y;
+		long h_x_0 = (long)Math.floor(h_pos_x);
+		long h_y_0 = (long)Math.floor(h_pos_y);
+		double h_x_q = h_pos_x - h_x_0; //桁丸め修正
+		double h_y_q = h_pos_y - h_y_0;
+		long h_x = Math.round(h_pos_x);
+		long h_y = Math.round(h_pos_y);
+
+		long h_max=Math.round(h_base / unit_x + h_base / unit_y);
+
+		if (h_y_q > -h_x_q + 1) {
+			if((h_y_q < 2 * h_x_q) && (h_y_q > 0.5 * h_x_q)){
+				h_x = h_x_0 + 1;
+				h_y = h_y_0 + 1;
+			}
+		} else if (h_y_q < -h_x_q + 1) {
+			if ((h_y_q > (2 * h_x_q) - 1) && (h_y_q < (0.5 * h_x_q) + 0.5)){
+				h_x = h_x_0;
+				h_y = h_y_0;
+			}
+		}
+
+		double h_lat = (h_k * h_x * unit_x + h_y * unit_y) / 2;
+		double h_lon = (h_lat - h_y * unit_y) / h_k;
+
+		Loc z_loc = xy2loc(h_lon, h_lat);
+		double z_loc_x = z_loc.lon;
+		double z_loc_y = z_loc.lat;
+		if(h_base - h_lon < h_size){
+			z_loc_x = 180;
+			long h_xy = h_x;
+			h_x = h_y;
+			h_y = h_xy;
+		}
+
+		long h_x_p =0;
+		long h_y_p =0;
+		if (h_x < 0) h_x_p = 1;
+		if (h_y < 0) h_y_p = 1;
+		long h_x_abs = Math.abs(h_x) * 2 + h_x_p;
+		long h_y_abs = Math.abs(h_y) * 2 + h_y_p;
+//		int h_x_100000 = (int)Math.floor(h_x_abs/777600000);
+		int h_x_10000 = (int)Math.floor((h_x_abs%777600000)/12960000);
+		int h_x_1000 = (int)Math.floor((h_x_abs%12960000)/216000);
+		int h_x_100 = (int)Math.floor((h_x_abs%216000)/3600);
+		int h_x_10 = (int)Math.floor((h_x_abs%3600)/60);
+		int h_x_1 = (int)Math.floor((h_x_abs%3600)%60);
+//		int h_y_100000 = (int)Math.floor(h_y_abs/777600000);
+		int h_y_10000 = (int)Math.floor((h_y_abs%777600000)/12960000);
+		int h_y_1000 = (int)Math.floor((h_y_abs%12960000)/216000);
+		int h_y_100 = (int)Math.floor((h_y_abs%216000)/3600);
+		int h_y_10 = (int)Math.floor((h_y_abs%3600)/60);
+		int h_y_1 = (int)Math.floor((h_y_abs%3600)%60);
+
+		StringBuffer sb = new StringBuffer();
+		sb.append(h_key.charAt(level % 60));
+
+//		if(h_max >=77600000/2) h_code += h_key.charAt(h_x_100000) + h_key.charAt(h_y_100000);
+		if(h_max >=12960000/2) sb.append(h_key.charAt(h_x_10000)).append(h_key.charAt(h_y_10000));
+		if(h_max >=216000/2) sb.append(h_key.charAt(h_x_1000)).append(h_key.charAt(h_y_1000));
+		if(h_max >=3600/2) sb.append(h_key.charAt(h_x_100)).append(h_key.charAt(h_y_100));
+		if(h_max >=60/2) sb.append(h_key.charAt(h_x_10)).append(h_key.charAt(h_y_10));
+		sb.append(h_key.charAt(h_x_1)).append(h_key.charAt(h_y_1));
+
+		String h_code = sb.toString();
+		return new Zone(z_loc_y, z_loc_x, h_x, h_y, h_code);
 	}
 	
-	private static Level geohex2level(String hexcode) {
-	    char[] code     = hexcode.toCharArray();
-	    int c_length = code.length;
+	public static final Zone getZoneByCode(String code) {
+//		int c_length = code.length();
+		int level = h_key.indexOf(code.charAt(0));
+//		int scl = level;
+		double h_size =  calcHexSize(level);
+		double unit_x = 6 * h_size;
+		double unit_y = 6 * h_size * h_k;
+		long h_max = Math.round(h_base / unit_x + h_base / unit_y);
+		long h_x = 0;
+		long h_y = 0;
 
-	    int level = 0;
-	    if ( c_length > 4 ) {
-	    	level = H_KEY.indexOf(code[0]);
-	    	if (level == -1)
-	    		throw new IllegalArgumentException("Code format is something wrong");
-	    	char[] code2 = new char[code.length-1];
-	    	for (int i = 1; i < code.length; i++) {
-	    		code2[i-1] = code[i];
-	    	}
-	    	code = code2;
-	    	if ( level == 0 ) level = 60; 
-	    } else { 
-	        level = 7;
-	    }
-	    return new Level(level, c_length, code);
+	/*	if (h_max >= 777600000 / 2) {
+		h_x = h_key.indexOf(code.charAt(1)) * 777600000 + 
+			  h_key.indexOf(code.charAt(3)) * 12960000 + 
+			  h_key.indexOf(code.charAt(5)) * 216000 + 
+			  h_key.indexOf(code.charAt(7)) * 3600 + 
+			  h_key.indexOf(code.charAt(9)) * 60 + 
+			  h_key.indexOf(code.charAt(11));
+		h_y = h_key.indexOf(code.charAt(2)) * 777600000 + 
+			  h_key.indexOf(code.charAt(4)) * 12960000 + 
+			  h_key.indexOf(code.charAt(6)) * 216000 + 
+			  h_key.indexOf(code.charAt(8)) * 3600 + 
+			  h_key.indexOf(code.charAt(10)) * 60 + 
+			  h_key.indexOf(code.charAt(12));
+		} else
+	*/
+		if (h_max >= 12960000 / 2) {
+			h_x = h_key.indexOf(code.charAt(1)) * 12960000 + 
+				  h_key.indexOf(code.charAt(3)) * 216000 + 
+				  h_key.indexOf(code.charAt(5)) * 3600 + 
+				  h_key.indexOf(code.charAt(7)) * 60 + 
+				  h_key.indexOf(code.charAt(9));
+			h_y = h_key.indexOf(code.charAt(2)) * 12960000 + 
+				  h_key.indexOf(code.charAt(4)) * 216000 + 
+				  h_key.indexOf(code.charAt(6)) * 3600 + 
+				  h_key.indexOf(code.charAt(8)) * 60 + 
+				  h_key.indexOf(code.charAt(10));
+		} else if (h_max >= 216000 / 2) {
+			h_x = h_key.indexOf(code.charAt(1)) * 216000 + 
+				  h_key.indexOf(code.charAt(3)) * 3600 + 
+				  h_key.indexOf(code.charAt(5)) * 60 + 
+				  h_key.indexOf(code.charAt(7));
+			h_y = h_key.indexOf(code.charAt(2)) * 216000 + 
+				  h_key.indexOf(code.charAt(4)) * 3600 + 
+				  h_key.indexOf(code.charAt(6)) * 60 + 
+				  h_key.indexOf(code.charAt(8));
+		} else if (h_max >= 3600 / 2) {
+			h_x = h_key.indexOf(code.charAt(1)) * 3600 + 
+				  h_key.indexOf(code.charAt(3)) * 60 + 
+				  h_key.indexOf(code.charAt(5));
+			h_y = h_key.indexOf(code.charAt(2)) * 3600 + 
+				  h_key.indexOf(code.charAt(4)) * 60 + 
+				  h_key.indexOf(code.charAt(6));
+		} else if (h_max >= 60 / 2) {
+			h_x = h_key.indexOf(code.charAt(1)) * 60 + 
+				  h_key.indexOf(code.charAt(3));
+			h_y = h_key.indexOf(code.charAt(2)) * 60 + 
+				  h_key.indexOf(code.charAt(4));
+		}else{
+			h_x = h_key.indexOf(code.charAt(1));
+			h_y = h_key.indexOf(code.charAt(2));
+		}
+
+		h_x = ((h_x % 2) != 0) ? -(h_x - 1) / 2 : h_x / 2;
+		h_y = ((h_y % 2) != 0) ? -(h_y - 1) / 2 : h_y / 2;
+		double h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2;
+		double h_lon_x = (h_lat_y - h_y * unit_y) / h_k;
+
+		Loc h_loc = xy2loc(h_lon_x, h_lat_y);
+		return new Zone(h_loc.lat, h_loc.lon, h_x, h_y, code);
+	}
+	
+	public static final List<List<String>> getXYListBySteps(Zone zone, int radius) {
+		List<List<String>> list = new ArrayList<List<String>>();
+
+		for(int i=0;i<radius;i++){
+			list.set(i, new ArrayList<String>());
+		}
+			
+		list.get(0).add((zone.x) + "_" + (zone.y));
+		for(int i=0;i<radius;i++){
+			for(int j=0;j<radius;j++){
+				if(i > 0 ||j > 0){
+					if(i>=j) list.get(i).add((zone.x + i) + "_" + (zone.y + j)); else list.get(j).add((zone.x + i) + "_" + (zone.y + j)) ;
+					if(i>=j) list.get(i).add((zone.x - i) + "_" + (zone.y - j)); else list.get(j).add((zone.x - i) + "_" + (zone.y - j)) ;
+					if(i>0&&j>0&&(i+j<=radius-1)){
+						list.get(i+j).add((zone.x - i) + "_" + (zone.y + j));
+						list.get(i+j).add((zone.x + i) + "_" + (zone.y - j));
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	
+	public static final class XY {
+		double x, y;
+		public XY(double x, double y) {
+			this.x = x; this.y = y;
+		}
+	}
+	public static final class Loc {
+		double lat, lon;
+		public Loc(double lat, double lon) {
+			this.lat = lat;
+			this.lon = lon;
+		}
+	}
+
+	// private static
+	private static XY loc2xy(double lon, double lat) {
+		double x = lon * h_base / 180;
+		double y = Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180);
+		y *= h_base / 180;
+		return new XY(x, y);
+	}
+	// private static
+	private static Loc xy2loc(double x, double y) {
+		double lon = (x / h_base) * 180;
+		double lat = (y / h_base) * 180;
+		lat = 180 / Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180)) - Math.PI / 2);
+		return new Loc(lat, lon);
 	}
 }
