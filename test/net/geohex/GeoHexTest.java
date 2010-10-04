@@ -38,6 +38,8 @@ public class GeoHexTest extends TestCase {
 	public void testConvertCoordinatesToGeoHex() throws IOException {
 		String c = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
 		assertEquals("jjdK3", c);
+		GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
+		assertEquals("jjdK3", zone.code);
 		FileReader r = new FileReader("test-files/testdata_ll2hex.txt");
 	    BufferedReader br = new BufferedReader(r);
 	    String line;
@@ -54,10 +56,14 @@ public class GeoHexTest extends TestCase {
 	    br.close();
 	}
 	public void testConvertGeoHexToCoordinates() throws IOException {
-		GeoHex.Zone z = GeoHex.decode("jjdK3");
-		assertEquals(35.780516755235475, z.lat);
-		assertEquals(139.57031250000003, z.lon);
-		assertEquals(9, z.level);
+		GeoHex.Zone zone1 = GeoHex.decode("jjdK3");
+		assertEquals(35.780516755235475, zone1.lat);
+		assertEquals(139.57031250000003, zone1.lon);
+		assertEquals(9, zone1.level);
+		GeoHex.Zone zone2 = GeoHex.getZoneByCode("jjdK3");
+		assertEquals(35.780516755235475, zone2.lat);
+		assertEquals(139.57031250000003, zone2.lon);
+		assertEquals(9, zone2.level);
 	    FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
 	    BufferedReader br = new BufferedReader(r);
 	    String line;

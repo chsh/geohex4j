@@ -10,6 +10,9 @@ http://twitter.com/chshii
   V1: ported from ruby implementation by @hal_sk.
   V2: ported from JavaScript implementation by @sa2da.
 
+  Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods are ready.
+  Other methods will be provided after well tested.
+
 # INSTALL
 * Simply copy net.geohex.GeoHex.java into your app.
 
@@ -17,12 +20,21 @@ http://twitter.com/chshii
 
   import net.geohex.GeoHex;
 
-  String code = GeoHex.encode(35.6478085, 139.7173629550321, 1);
-  // code => 132KpuG
-  GeoHex.Zone zone = GeoHex.decode(code);
-  // zone.lat => 35.6478085
-  // zone.lon => 139.7173629550321
-  // zone.level => 1
+  String code = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
+  // code -> "jjdK3"
+  GeoHex.Zone z = GeoHex.decode("jjdK3"); // decode method is an alias of getZoneByCode.
+  // z.lat -> 35.780516755235475
+  // z.lon -> 139.57031250000003
+  // z.level -> 9
+
+  or
+
+  GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
+  // zone1.code -> "jjdK3"
+  GeoHex.Zone zone2 = GeoHex.getZoneByCode("jjdK3");
+  // z.lat -> 35.780516755235475
+  // z.lon -> 139.57031250000003
+  // z.level -> 9
 
 # LICENSE
 
