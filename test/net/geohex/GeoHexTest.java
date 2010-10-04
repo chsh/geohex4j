@@ -36,7 +36,9 @@ public class GeoHexTest extends TestCase {
 		} catch (IllegalArgumentException expected) {}
 	}
 	public void testConvertCoordinatesToGeoHex() throws IOException {
-	    FileReader r = new FileReader("test-files/testdata_ll2hex.txt");
+		String c = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
+		assertEquals("jjdK3", c);
+		FileReader r = new FileReader("test-files/testdata_ll2hex.txt");
 	    BufferedReader br = new BufferedReader(r);
 	    String line;
 	    while ((line = br.readLine()) != null) {
@@ -52,6 +54,10 @@ public class GeoHexTest extends TestCase {
 	    br.close();
 	}
 	public void testConvertGeoHexToCoordinates() throws IOException {
+		GeoHex.Zone z = GeoHex.decode("jjdK3");
+		assertEquals(35.780516755235475, z.lat);
+		assertEquals(139.57031250000003, z.lon);
+		assertEquals(9, z.getLevel());
 	    FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
 	    BufferedReader br = new BufferedReader(r);
 	    String line;
