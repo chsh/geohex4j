@@ -23,6 +23,7 @@ public class GeoHex {
 		public double x; // ?
 		public double y; // ?
 		public String code;
+		public int level;
 
 		public Zone(double lat, double lon, double x, double y, String code) {
 			this.lat = lat;
@@ -30,9 +31,7 @@ public class GeoHex {
 			this.x = x;
 			this.y = y;
 			this.code = code;
-		}
-		public int getLevel() {
-			return h_key.indexOf(this.code.charAt(0));
+			this.level = getLevel();
 		}
 		public double getHexSize() {
 			return calcHexSize(this.getLevel());
@@ -60,6 +59,9 @@ public class GeoHex {
 				new Loc(h_btm, h_cr),
 				new Loc(h_btm, h_cl)
 			};
+		}
+		private int getLevel() {
+			return h_key.indexOf(this.code.charAt(0));
 		}
 	}
 	

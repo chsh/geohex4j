@@ -57,7 +57,7 @@ public class GeoHexTest extends TestCase {
 		GeoHex.Zone z = GeoHex.decode("jjdK3");
 		assertEquals(35.780516755235475, z.lat);
 		assertEquals(139.57031250000003, z.lon);
-		assertEquals(9, z.getLevel());
+		assertEquals(9, z.level);
 	    FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
 	    BufferedReader br = new BufferedReader(r);
 	    String line;
@@ -70,7 +70,7 @@ public class GeoHexTest extends TestCase {
 	    	assertEquals(0, (long)d * 1000000000000L);
 	    	d = Double.parseDouble(v[1]) - zone.lon;
 	    	assertEquals(0, (long)d * 1000000000000L);
-	    	assertEquals(Integer.parseInt(v[2]), zone.getLevel());
+	    	assertEquals(Integer.parseInt(v[2]), zone.level);
 	    }
 	    br.close();
 	}
