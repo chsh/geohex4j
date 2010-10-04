@@ -1,7 +1,5 @@
 package net.geohex;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class GeoHex {
 	public  static final String VERSION = "2.03";
@@ -228,30 +226,6 @@ public class GeoHex {
 		Loc h_loc = xy2loc(h_lon_x, h_lat_y);
 		return new Zone(h_loc.lat, h_loc.lon, h_x, h_y, code);
 	}
-	
-	public static final List<List<String>> getXYListBySteps(Zone zone, int radius) {
-		List<List<String>> list = new ArrayList<List<String>>();
-
-		for(int i=0;i<radius;i++){
-			list.set(i, new ArrayList<String>());
-		}
-			
-		list.get(0).add((zone.x) + "_" + (zone.y));
-		for(int i=0;i<radius;i++){
-			for(int j=0;j<radius;j++){
-				if(i > 0 ||j > 0){
-					if(i>=j) list.get(i).add((zone.x + i) + "_" + (zone.y + j)); else list.get(j).add((zone.x + i) + "_" + (zone.y + j)) ;
-					if(i>=j) list.get(i).add((zone.x - i) + "_" + (zone.y - j)); else list.get(j).add((zone.x - i) + "_" + (zone.y - j)) ;
-					if(i>0&&j>0&&(i+j<=radius-1)){
-						list.get(i+j).add((zone.x - i) + "_" + (zone.y + j));
-						list.get(i+j).add((zone.x + i) + "_" + (zone.y - j));
-					}
-				}
-			}
-		}
-		return list;
-	}
-
 	
 	public static final class XY {
 		double x, y;
