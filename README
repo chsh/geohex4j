@@ -1,13 +1,14 @@
 GeoHex for Java
 
 # GeoHex for Java DESCRIPTION
-GeoHex for Java implemented by CHIKURA Shinsaku.
+GeoHex V2 for Java implemented by CHIKURA Shinsaku.
 http://simplegimmick.blogspot.com/
 http://twitter.com/chshii
 
 # GeoHex class
 * GeoHex class can convert between latitude/longitude and GeoHex
-  ported from ruby implementation by @hal_sk.
+  V1: ported from ruby implementation by @hal_sk.
+  V2: ported from JavaScript implementation by @sa2da.
 
 # INSTALL
 * Simply copy net.geohex.GeoHex.java into your app.
@@ -28,8 +29,10 @@ http://twitter.com/chshii
 GeoHex specification is licensed under CC-BY-SA
 by @sa2da http://geogames.net.
 
-This java code is followed original ruby code license (MIT)
+V1: This java code is followed original ruby code license (MIT)
 developed by @hal_sk.
+V2: This java code is followed original JavaScript code license (CC-BY-SA)
+developed by @sa2da.
 
 Copyright (C) 2010 CHIKURA Shinsaku
 
