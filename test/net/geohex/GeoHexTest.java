@@ -133,6 +133,55 @@ public class GeoHexTest extends TestCase {
 	    br.close();
 	}
 
+	public void testConvertCoordinatesToXY() throws IOException {
+		GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
+		assertEquals("293.0,-104.0", "" + zone.x + "," + zone.y);
+		FileReader r = new FileReader("test-files/testdata_ll2xy.txt");
+	    BufferedReader br = new BufferedReader(r);
+	    String line;
+	    while ((line = br.readLine()) != null) {
+	    	if (line.charAt(0) == '#') continue;
+	    	String[] v = line.split(",");
+	    	double lat = Double.parseDouble(v[0]);
+	    	double lon = Double.parseDouble(v[1]);
+	    	int level = Integer.parseInt(v[2]);
+	    	double expected_x = Double.parseDouble(v[3]);
+	    	double expected_y = Double.parseDouble(v[4]);
+	    	GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
+	    	assertEquals("" + expected_x + "," + expected_y,
+	    			"" + z.x + "," + z.y);
+	    }
+	    br.close();
+	}
+
+	public void testConvertXYToZone() throws IOException {
+		GeoHex.Zone zone = GeoHex.getZoneByXY(293.0, -104.0, 9);
+		assertEquals("35.780516755235475,139.57031250000003",
+				"" + zone.lat + "," + zone.lon);
+		FileReader r = new FileReader("test-files/testdata_xy2ll.txt");
+	    BufferedReader br = new BufferedReader(r);
+	    String line;
+	    while ((line = br.readLine()) != null) {
+	    	if (line.charAt(0) == '#') continue;
+	    	String[] v = line.split(",");
+	    	double x = Double.parseDouble(v[0]);
+	    	double y = Double.parseDouble(v[1]);
+	    	double expected_lat = Double.parseDouble(v[2]);
+	    	double expected_lon = Double.parseDouble(v[3]);
+	    	int level = Integer.parseInt(v[4]);
+	    	String expected_code = v[5];
+	    	GeoHex.Zone z = GeoHex.getZoneByXY(x, y, level);
+	    	double d;
+	    	d = expected_lat - z.lat;
+	    	assertEquals(0, (long)d * 1000000000000L);
+	    	d = expected_lon - z.lon;
+	    	assertEquals(0, (long)d * 1000000000000L);
+	    	assertEquals(level, z.level);
+	    	assertEquals(expected_code, z.code);
+	    }
+	    br.close();
+	}
+
 	private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
 		for (int i = 0; i < expected_polygon.length; i++) {
 			double[] latlon = expected_polygon[i];
@@ -143,5 +192,4 @@ public class GeoHexTest extends TestCase {
 	    	assertEquals(0, (long)d * 1000000000000L);
 		}
 	}
-
 }

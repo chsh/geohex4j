@@ -35,7 +35,6 @@ http://twitter.com/chshii
   // [4]:{35.61568052680066,139.68750000000006}
   // [5]:{35.61568052680066,139.45312500000006}
 
-
   or
 
   GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
@@ -45,6 +44,11 @@ http://twitter.com/chshii
   // zone2.lon -> 139.57031250000003
   // zone2.level -> 9
   // ...
+  GeoHex.Zone zone3 = GeoHex.getZoneByXY(293.0, -104.0, 9);
+  // zone3.lat -> 35.780516755235475
+  // zone3.lon -> 139.57031250000003
+  // zone3.level -> 9
+  ...
 
 # LICENSE
 

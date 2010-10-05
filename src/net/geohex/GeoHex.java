@@ -229,6 +229,49 @@ public class GeoHex {
 		return new Zone(h_loc.lat, h_loc.lon, h_x, h_y, code);
 	}
 	
+	public static final Zone getZoneByXY(double x, double y, int level) {
+//		int scl = level;
+		double h_size =  calcHexSize(level);
+		double unit_x = 6.0 * h_size;
+		double unit_y = 6.0 * h_size * h_k;
+		long h_max = Math.round(h_base / unit_x + h_base / unit_y);
+		double h_lat_y = (h_k * x * unit_x + y * unit_y) / 2.0;
+		double h_lon_x = (h_lat_y - y * unit_y) / h_k;
+
+		Loc h_loc = xy2loc(h_lon_x, h_lat_y);
+		int x_p =0;
+		int y_p =0;
+		if (x < 0) x_p = 1;
+		if (y < 0) y_p = 1;
+		long x_abs = (long)(Math.abs(x) * 2 + x_p);
+		long y_abs = (long)Math.abs(y) * 2 + y_p;
+//		int x_100000 = (int)Math.floor(x_abs/777600000);
+		int x_10000 = (int)Math.floor((x_abs%777600000)/12960000);
+		int x_1000 = (int)Math.floor((x_abs%12960000)/216000);
+		int x_100 = (int)Math.floor((x_abs%216000)/3600);
+		int x_10 = (int)Math.floor((x_abs%3600)/60);
+		int x_1 = (int)Math.floor((x_abs%3600)%60);
+//		int y_100000 = (int)Math.floor(y_abs/777600000);
+		int y_10000 = (int)Math.floor((y_abs%777600000)/12960000);
+		int y_1000 = (int)Math.floor((y_abs%12960000)/216000);
+		int y_100 = (int)Math.floor((y_abs%216000)/3600);
+		int y_10 = (int)Math.floor((y_abs%3600)/60);
+		int y_1 = (int)Math.floor((y_abs%3600)%60);
+
+		StringBuffer sb = new StringBuffer();
+		sb.append(h_key.charAt(level % 60));
+
+//		if(h_max >=77600000/2) h_code += h_key.charAt(x_100000) + h_key.charAt(y_100000);
+		if(h_max >=12960000/2) sb.append(h_key.charAt(x_10000)).append(h_key.charAt(y_10000));
+		if(h_max >=216000/2) sb.append(h_key.charAt(x_1000)).append(h_key.charAt(y_1000));
+		if(h_max >=3600/2) sb.append(h_key.charAt(x_100)).append(h_key.charAt(y_100));
+		if(h_max >=60/2) sb.append(h_key.charAt(x_10)).append(h_key.charAt(y_10));
+		sb.append(h_key.charAt(x_1)).append(h_key.charAt(y_1));
+
+		String h_code = sb.toString();
+		return new Zone(h_loc.lat, h_loc.lon, x, y, h_code);
+	}
+
 	public static final class XY {
 		public double x, y;
 		public XY(double x, double y) {

@@ -146,6 +146,42 @@ function calc_get_hex_size_by_location() {
   document.getElementById("resultdiv").innerHTML = res;
 }
 
+function calc_get_xy_by_location() {
+	  var res = "";
+	  for (var i = 0; i < lines.length; i++) {
+	    var ary = lines[i].split(",");
+	    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+	    var hex_size = z.getHexSize();
+	    var resary = new Array(3 + 2);
+	    resary[0] = ary[0];
+	    resary[1] = ary[1];
+	    resary[2] = ary[2];
+	    resary[3] = z.x;
+	    resary[4] = z.y;
+	    res += resary.join(",") + "\n";
+	  }
+	  document.getElementById("resultdiv").innerHTML = res;
+}
+
+function calc_get_zone_by_xy() {
+	  var res = "";
+	  for (var i = 0; i < lines.length; i++) {
+	    var ary = lines[i].split(",");
+	    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+	    var hex_size = z.getHexSize();
+	    var resary = new Array(2 + 3);
+	    resary[0] = z.x;
+	    resary[1] = z.y;
+	    var z2 = GeoHex.getZoneByXY(z.x, z.y, new Number(ary[2]));
+	    resary[2] = z2.lat;
+	    resary[3] = z2.lon;
+	    resary[4] = z2.getLevel();
+	    resary[5] = z2.code;
+	    res += resary.join(",") + "\n";
+	  }
+	  document.getElementById("resultdiv").innerHTML = res;
+}
+
 </script>
 <h1>Menu</h1>
 <form action="">
@@ -153,6 +189,8 @@ function calc_get_hex_size_by_location() {
 <input type="button" value="calcZoneByCode" onclick="calc_zone_by_code(); return false;"/>
 <input type="button" value="calcGetHexCoordsByLocation" onclick="calc_get_hex_coords_by_location(); return false;"/>
 <input type="button" value="calcGetHexSizeByLocation" onclick="calc_get_hex_size_by_location(); return false;"/>
+<input type="button" value="calcGetXYByLocation" onclick="calc_get_xy_by_location(); return false;"/>
+<input type="button" value="calcGetZoneByXY" onclick="calc_get_zone_by_xy(); return false;"/>
 </form>
 <h2>Result</h2>
 <textarea id="resultdiv" cols="80" rows="25">
