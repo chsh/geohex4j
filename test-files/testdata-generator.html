@@ -82,13 +82,19 @@ var lines = [
 "85.05112831317236,140.56136995553973,24,ydbpnlQkGWa"
 ];
 
-function calc_zone_by_location() {
+function verify_zone_by_location() {
   var res = "";
   for (var i = 0; i < lines.length; i++) {
     var ary = lines[i].split(",");
     var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
     var code = ary[3];
-    res += "lat:" + ary[0] + ", lon:" + ary[1] + ", level:" + ary[2] + ", code:" + code + ", zone.code: " + z.code + "<br/>";
+    res += lines[i] + ",";
+    if (z.code != code) {
+      res += z.code + ",NG";
+    } else {
+      res += z.code;
+    }
+    res += "\n";
   }
   document.getElementById("resultdiv").innerHTML = res;
 }
@@ -99,19 +105,57 @@ function calc_zone_by_code() {
     var ary = lines[i].split(",");
     var zone = GeoHex.getZoneByCode(ary[3]);
     // res += "line:" + lines[i] + ", zone>code:" + zone.code + ", lat:" + zone.lat + ", lon:" + zone.lon + "level:" + zone.getLevel() + "<br/>";
-    res += zone.lat + "," + zone.lon + "," + zone.getLevel() + "," + zone.code + "<br/>";
+    res += zone.lat + "," + zone.lon + "," + zone.getLevel() + "," + zone.code + "\n";
+  }
+  document.getElementById("resultdiv").innerHTML = res;
+}
+
+
+function calc_get_hex_coords_by_location() {
+  var res = "";
+  for (var i = 0; i < lines.length; i++) {
+    var ary = lines[i].split(",");
+    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+    var polygon = z.getHexCoords();
+    var resary = new Array(3 + 2 * 6);
+    resary[0] = ary[0];
+    resary[1] = ary[1];
+    resary[2] = ary[2];
+    for (var j = 0; j < 6; j++) {
+      resary[3 + j * 2 + 0] = polygon[j].lat;
+      resary[3 + j * 2 + 1] = polygon[j].lon;
+    }
+    res += resary.join(",") + "\n";
+  }
+  document.getElementById("resultdiv").innerHTML = res;
+}
+
+function calc_get_hex_size_by_location() {
+  var res = "";
+  for (var i = 0; i < lines.length; i++) {
+    var ary = lines[i].split(",");
+    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+    var hex_size = z.getHexSize();
+    var resary = new Array(3 + 1);
+    resary[0] = ary[0];
+    resary[1] = ary[1];
+    resary[2] = ary[2];
+    resary[3] = hex_size;
+    res += resary.join(",") + "\n";
   }
   document.getElementById("resultdiv").innerHTML = res;
 }
 
 </script>
-<h1>Calc</h1>
+<h1>Menu</h1>
 <form action="">
-<input type="button" value="calcZoneByLocation" onclick="calc_zone_by_location(); return false;"/>
+<input type="button" value="verifyZoneByLocation" onclick="verify_zone_by_location(); return false;"/>
 <input type="button" value="calcZoneByCode" onclick="calc_zone_by_code(); return false;"/>
+<input type="button" value="calcGetHexCoordsByLocation" onclick="calc_get_hex_coords_by_location(); return false;"/>
+<input type="button" value="calcGetHexSizeByLocation" onclick="calc_get_hex_size_by_location(); return false;"/>
 </form>
 <h2>Result</h2>
-<div id="resultdiv">
-</div>
+<textarea id="resultdiv" cols="80" rows="25">
+</textarea>
 </html>
 
