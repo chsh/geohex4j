@@ -230,13 +230,13 @@ public class GeoHex {
 	}
 	
 	public static final class XY {
-		double x, y;
+		public double x, y;
 		public XY(double x, double y) {
 			this.x = x; this.y = y;
 		}
 	}
 	public static final class Loc {
-		double lat, lon;
+		public double lat, lon;
 		public Loc(double lat, double lon) {
 			this.lat = lat;
 			this.lon = lon;
