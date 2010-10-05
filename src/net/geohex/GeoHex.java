@@ -245,16 +245,16 @@ public class GeoHex {
 
 	// private static
 	private static XY loc2xy(double lon, double lat) {
-		double x = lon * h_base / 180;
-		double y = Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180);
-		y *= h_base / 180;
+		double x = lon * h_base / 180.0;
+		double y = Math.log(Math.tan((90.0 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
+		y *= h_base / 180.0;
 		return new XY(x, y);
 	}
 	// private static
 	private static Loc xy2loc(double x, double y) {
-		double lon = (x / h_base) * 180;
-		double lat = (y / h_base) * 180;
-		lat = 180 / Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180)) - Math.PI / 2);
+		double lon = (x / h_base) * 180.0;
+		double lat = (y / h_base) * 180.0;
+		lat = 180 / Math.PI * (2.0 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
 		return new Loc(lat, lon);
 	}
 }
