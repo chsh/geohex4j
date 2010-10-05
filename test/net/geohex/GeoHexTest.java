@@ -80,5 +80,68 @@ public class GeoHexTest extends TestCase {
 	    }
 	    br.close();
 	}
+	public void testConvertCoordinatesToGeoHexPolygon() throws IOException {
+		GeoHex.Zone zone = GeoHex.getZoneByLocation(35.68526754622903,139.76698413491252,23);
+		double[][] polygon = {
+				{ 35.685262361266446,139.7669792175293 },
+				{ 35.68527242369706,139.76698637008667 },
+				{ 35.68527242369706,139.76700067520142 },
+				{ 35.685262361266446,139.7670078277588 },
+				{ 35.685252298834484,139.76700067520142 },
+				{ 35.685252298834484,139.76698637008667 }
+		};
+		assertPolygon(polygon, zone.getHexCoords());
+		FileReader r = new FileReader("test-files/testdata_ll2polygon.txt");
+	    BufferedReader br = new BufferedReader(r);
+	    String line;
+	    while ((line = br.readLine()) != null) {
+	    	if (line.charAt(0) == '#') continue;
+	    	String[] v = line.split(",");
+	    	double lat = Double.parseDouble(v[0]);
+	    	double lon = Double.parseDouble(v[1]);
+	    	int level = Integer.parseInt(v[2]);
+	    	GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
+	    	double[][] expected_polygon = {
+					{ Double.parseDouble(v[3]), Double.parseDouble(v[4]) }, // [0]
+					{ Double.parseDouble(v[5]), Double.parseDouble(v[6]) }, // [1]
+					{ Double.parseDouble(v[7]), Double.parseDouble(v[8]) }, // [2]
+					{ Double.parseDouble(v[9]), Double.parseDouble(v[10]) }, // [3]
+					{ Double.parseDouble(v[11]), Double.parseDouble(v[12]) }, // [4]
+					{ Double.parseDouble(v[13]), Double.parseDouble(v[14]) }, // [6]
+	    	};
+			assertPolygon(expected_polygon, z.getHexCoords());
+	    }
+	    br.close();
+	}
+
+	public void testConvertCoordinatesToGeoHexSize() throws IOException {
+		GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
+		assertEquals(13045.252825520833, zone.getHexSize());
+		FileReader r = new FileReader("test-files/testdata_ll2hexsize.txt");
+	    BufferedReader br = new BufferedReader(r);
+	    String line;
+	    while ((line = br.readLine()) != null) {
+	    	if (line.charAt(0) == '#') continue;
+	    	String[] v = line.split(",");
+	    	double lat = Double.parseDouble(v[0]);
+	    	double lon = Double.parseDouble(v[1]);
+	    	int level = Integer.parseInt(v[2]);
+	    	double expected_hex_size = Double.parseDouble(v[3]);
+	    	GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
+	    	assertEquals(expected_hex_size, z.getHexSize());
+	    }
+	    br.close();
+	}
+
+	private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
+		for (int i = 0; i < expected_polygon.length; i++) {
+			double[] latlon = expected_polygon[i];
+	    	double d;
+	    	d = latlon[0] - polygon[i].lat;
+	    	assertEquals(0, (long)d * 1000000000000L);
+	    	d = latlon[1] - polygon[i].lon;
+	    	assertEquals(0, (long)d * 1000000000000L);
+		}
+	}
 
 }

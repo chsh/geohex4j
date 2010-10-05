@@ -13,7 +13,7 @@ public class GeoHex {
 	// *** Share with all instances ***
 	// private static
 	private static double calcHexSize(int level) {
-		return h_base/Math.pow(2, level)/3;
+		return h_base/Math.pow(2.0, level)/3.0;
 	}
 
 	// private class
@@ -42,7 +42,7 @@ public class GeoHex {
 			XY h_xy = loc2xy(h_lon, h_lat);
 			double h_x = h_xy.x;
 			double h_y = h_xy.y;
-			double h_deg = Math.tan(Math.PI * (60 / 180));
+			double h_deg = Math.tan(Math.PI * (60.0 / 180.0));
 			double h_size = this.getHexSize();
 			double h_top = xy2loc(h_x, h_y + h_deg *  h_size).lat;
 			double h_btm = xy2loc(h_x, h_y - h_deg *  h_size).lat;
