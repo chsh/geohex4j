@@ -1,5 +1,9 @@
 package net.geohex;
 
+/*
+ * GeoHex by @sa2da (http://geogames.net) is licensed under Creative Commons BY-SA 2.1 Japan License.
+ * GeoHex V2 for Java implemented by @chshii is licensed under Creative Commons BY-SA 2.1 Japan License.
+ */
 
 public class GeoHex {
 	public  static final String VERSION = "2.03";
