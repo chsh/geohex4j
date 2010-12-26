@@ -19,33 +19,18 @@ http://twitter.com/chshii
   import net.geohex.GeoHex;
 
   String code = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
-  // code -> "jjdK3"
-  GeoHex.Zone z = GeoHex.decode("jjdK3"); // decode method is an alias of getZoneByCode.
-  // z.lat -> 35.780516755235475
-  // z.lon -> 139.57031250000003
-  // z.level -> 9
-  // z.getHexSize() -> 13045.252825520833
-  GeoHex.Loc[] polygon = z.polygon;
-  // [0]:{35.780516755235475,139.33593750000003}
-  // [1]:{35.945011915675025,139.45312500000006}
-  // [2]:{35.945011915675025,139.68750000000006}
-  // [3]:{35.780516755235475,139.80468750000006}
-  // [4]:{35.61568052680066,139.68750000000006}
-  // [5]:{35.61568052680066,139.45312500000006}
-
-  or
-
+  // code -> "XM566370240"
   GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-  // zone1.code -> "jjdK3"
-  GeoHex.Zone zone2 = GeoHex.getZoneByCode("jjdK3");
-  // zone2.lat -> 35.780516755235475
-  // zone2.lon -> 139.57031250000003
+  // zone1.lat -> 35.78044332128247
+  // zone1.lon -> 139.57018747142203
+  // zone1.level -> 9
+  // zone1.getHexSize() -> 37.70410702222824
+
+  GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
+  // zone2.lat -> 35.78044332128247
+  // zone2.lon -> 139.57018747142203
   // zone2.level -> 9
-  // ...
-  GeoHex.Zone zone3 = GeoHex.getZoneByXY(293.0, -104.0, 9);
-  // zone3.lat -> 35.780516755235475
-  // zone3.lon -> 139.57031250000003
-  // zone3.level -> 9
+  // zone2.getHexSize() -> 37.70410702222824
   ...
 
 # LICENSE
