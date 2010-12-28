@@ -228,6 +228,11 @@ public class GeoHex {
 		double h_lon_x = (h_lat_y - h_y * unit_y) / h_k;
 
 		Loc h_loc = xy2loc(h_lon_x, h_lat_y);
+		if (h_loc.lon > 180) {
+			h_loc.lon -= 360;
+		} else if (h_loc.lon < -180) {
+			h_loc.lon += 360;
+		}
 		return new Zone(h_loc.lat, h_loc.lon, h_x, h_y, code);
 	}
 	

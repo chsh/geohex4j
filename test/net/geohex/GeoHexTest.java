@@ -75,7 +75,11 @@ public class GeoHexTest extends TestCase {
 	    	d = Double.parseDouble(v[0]) - zone.lat;
 	    	assertEquals(0, (long)d * 10000000000000L);
 	    	d = Double.parseDouble(v[1]) - zone.lon;
-	    	assertEquals(0, (long)d * 10000000000000L);
+	    	long dl = (long)d * 10000000000000L;
+	    	if (dl == -3600000000000000L || dl == 3600000000000000L) {
+	    		dl = 0L;
+	    	}
+	    	assertEquals(0, dl);
 	    	assertEquals(Integer.parseInt(v[2]), zone.level);
 	    }
 	    br.close();

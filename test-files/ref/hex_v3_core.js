@@ -1,6 +1,9 @@
-///////////[2010.12.14 v3公開/////////
+/// GeoHex by @sa2da (http://geogames.net) is licensed under Creative Commons BY-SA 2.1 Japan License. ///
 
-(function (win) {	// グローバルを汚さないように関数化
+///////////[2010.12.14 v3公開]/////////
+///////////[2010.12.28 zoneByCode()内のlonを±180以内に補正]/////////
+
+(function (win) {
 
 // namspace GeoHex;
 if (!win.GeoHex)	win.GeoHex = function(){};
@@ -9,7 +12,6 @@ GeoHex.version = "3.00";
 
 // *** Share with all instances ***
 var h_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-var h_rotate = "458306721";
 var h_base = 20037508.34;
 var h_deg = Math.PI*(30/180);
 var h_k = Math.tan(h_deg);
@@ -212,6 +214,9 @@ function getZoneByCode(code) {
 	var h_lon_x = (h_lat_y - h_y * unit_y) / h_k;
 
 	var h_loc = xy2loc(h_lon_x, h_lat_y);
+	if(h_loc.lon>180){ h_loc.lon -= 360;
+	}else if(h_loc.lon<-180){ h_loc.lon += 360;
+	}
 	return (_zoneCache[code] = new Zone(h_loc.lat, h_loc.lon, h_x, h_y, code));
 }
 
