@@ -35,13 +35,10 @@ http://twitter.com/chshii
 
 # LICENSE
 
-GeoHex specification is licensed under CC-BY-SA
-by @sa2da http://geogames.net.
+The MIT License (MIT), in honor of @sa2da. http://twitter.com/sa2da
+comes from http://www.geohex.org/
 
-V2: This java code is followed original JavaScript code license (CC-BY-SA)
-developed by @sa2da.
-
-Copyright (C) 2010 CHIKURA Shinsaku
+Copyright (C) 2010 @chsh, @mattak
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -61,4 +58,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  
