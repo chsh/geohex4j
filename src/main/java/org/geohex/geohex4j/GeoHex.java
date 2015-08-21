@@ -1,4 +1,4 @@
-package net.geohex;
+package org.geohex.geohex4j;
 
 import java.util.ArrayList;
 import java.util.List;
