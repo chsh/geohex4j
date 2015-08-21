@@ -12,11 +12,11 @@ http://twitter.com/chshii
   Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods are ready.
 
 # INSTALL
-* Simply copy net.geohex.GeoHex.java into your app.
+* Simply copy org.geohex.geohex4j.GeoHex.java into your app.
 
 # USAGE
 
-  import net.geohex.GeoHex;
+  import org.geohex.geohex4j.GeoHex;
 
   String code = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
   // code -> "XM566370240"

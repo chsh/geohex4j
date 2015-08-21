@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.geohex</groupId>
+  <groupId>org.geohex.geohex4j</groupId>
   <artifactId>geohex4j</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -12,8 +12,8 @@
 
   <licenses>
     <license>
-      <name>CC BY-SA 2.1</name>
-      <url>https://creativecommons.org/licenses/by-sa/2.1/jp/</url>
+      <name>MIT License</name>
+      <url>http://opensource.org/licenses/mit-license.php</url>
       <distribution>repo</distribution>
     </license>
   </licenses>

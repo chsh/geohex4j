@@ -1,4 +1,4 @@
-package net.geohex;
+package org.geohex.geohex4j;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import net.geohex.GeoHex;
+import org.geohex.geohex4j.GeoHex;
 
 public class GeoHexTest extends TestCase {
 	public void testInvalidArguments() {
