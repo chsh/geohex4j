@@ -1,5 +1,7 @@
 # geohex4j
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.geohex.geohex4j/geohex4j/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser)
+
 GeoHex for Java
 
 # DESCRIPTION
@@ -19,7 +21,13 @@ Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods a
 
 # INSTALL
 
-Simply copy org.geohex.geohex4j.GeoHex.java into your app.
+Gradle:
+
+```
+compile 'org.geohex.geohex4j:geohex4j:3.0.0'
+```
+
+or simply copy org.geohex.geohex4j.GeoHex.java into your app.
 
 # USAGE
 
