@@ -1,37 +1,46 @@
+# geohex4j
+
 GeoHex for Java
 
-# GeoHex for Java DESCRIPTION
+# DESCRIPTION
+
 GeoHex V3 for Java implemented by CHIKURA Shinsaku.
-http://www.simplegimmick.com/
-http://twitter.com/chshii
+
+- http://www.simplegimmick.com/
+- http://twitter.com/chshii
 
 # GeoHex class
-* GeoHex class can convert between latitude/longitude and GeoHex
-  V3: ported from JavaScript implementation by @sa2da.
 
-  Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods are ready.
+GeoHex class can convert between latitude/longitude and GeoHex
+
+V3: ported from JavaScript implementation by @sa2da.
+
+Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods are ready.
 
 # INSTALL
-* Simply copy org.geohex.geohex4j.GeoHex.java into your app.
+
+Simply copy org.geohex.geohex4j.GeoHex.java into your app.
 
 # USAGE
 
-  import org.geohex.geohex4j.GeoHex;
+```java
+import org.geohex.geohex4j.GeoHex;
 
-  String code = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
-  // code -> "XM566370240"
-  GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-  // zone1.lat -> 35.78044332128247
-  // zone1.lon -> 139.57018747142203
-  // zone1.level -> 9
-  // zone1.getHexSize() -> 37.70410702222824
+String code = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
+// code -> "XM566370240"
+GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
+// zone1.lat -> 35.78044332128247
+// zone1.lon -> 139.57018747142203
+// zone1.level -> 9
+// zone1.getHexSize() -> 37.70410702222824
 
-  GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
-  // zone2.lat -> 35.78044332128247
-  // zone2.lon -> 139.57018747142203
-  // zone2.level -> 9
-  // zone2.getHexSize() -> 37.70410702222824
-  ...
+GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
+// zone2.lat -> 35.78044332128247
+// zone2.lon -> 139.57018747142203
+// zone2.level -> 9
+// zone2.getHexSize() -> 37.70410702222824
+...
+```
 
 # LICENSE
 
