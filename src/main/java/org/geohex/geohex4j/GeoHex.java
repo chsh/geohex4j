@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static net.teralytics.geohex.GeoHex.*;
+
 public class GeoHex {
 
     // *** Share with all instances ***
@@ -17,63 +19,7 @@ public class GeoHex {
     public static final double h_deg = Math.PI * (30.0 / 180.0);
     public static final double h_k = Math.tan(h_deg);
 
-    // *** Share with all instances ***
-    // private static
-    private static double calcHexSize(int level) {
-        return h_base / Math.pow(3.0, level + 1);
-    }
-
     // private class
-    public static final class Zone {
-        public double lat;
-        public double lon;
-        public long x; // ?
-        public long y; // ?
-        public String code;
-        public int level;
-
-        public Zone(double lat, double lon, long x, long y, String code) {
-            this.lat = lat;
-            this.lon = lon;
-            this.x = x;
-            this.y = y;
-            this.code = code;
-            this.level = getLevel();
-        }
-
-        private int getLevel() {
-            return this.code.length() - 2;
-        }
-
-        public double getHexSize() {
-            return calcHexSize(this.getLevel() + 2);
-        }
-
-        public Loc[] getHexCoords() {
-            double h_lat = this.lat;
-            double h_lon = this.lon;
-            XY h_xy = loc2xy(h_lon, h_lat);
-            double h_x = h_xy.x;
-            double h_y = h_xy.y;
-            double h_deg = Math.tan(Math.PI * (60.0 / 180.0));
-            double h_size = this.getHexSize();
-            double h_top = xy2loc(h_x, h_y + h_deg * h_size).lat;
-            double h_btm = xy2loc(h_x, h_y - h_deg * h_size).lat;
-
-            double h_l = xy2loc(h_x - 2 * h_size, h_y).lon;
-            double h_r = xy2loc(h_x + 2 * h_size, h_y).lon;
-            double h_cl = xy2loc(h_x - 1 * h_size, h_y).lon;
-            double h_cr = xy2loc(h_x + 1 * h_size, h_y).lon;
-            return new Loc[]{
-                    new Loc(h_lat, h_l),
-                    new Loc(h_top, h_cl),
-                    new Loc(h_top, h_cr),
-                    new Loc(h_lat, h_r),
-                    new Loc(h_btm, h_cr),
-                    new Loc(h_btm, h_cl)
-            };
-        }
-    }
 
     // public static
     public static Zone getZoneByLocation(double lat, double lon, int level) {
@@ -88,8 +34,8 @@ public class GeoHex {
         double h_size = calcHexSize(level);
 
         XY z_xy = loc2xy(lon, lat);
-        double lon_grid = z_xy.x;
-        double lat_grid = z_xy.y;
+        double lon_grid = z_xy.x();
+        double lat_grid = z_xy.y();
         double unit_x = 6 * h_size;
         double unit_y = 6 * h_size * h_k;
         double h_pos_x = (lon_grid + lat_grid / h_k) / unit_x;
@@ -117,8 +63,8 @@ public class GeoHex {
         double h_lon = (h_lat - h_y * unit_y) / h_k;
 
         Loc z_loc = xy2loc(h_lon, h_lat);
-        double z_loc_x = z_loc.lon;
-        double z_loc_y = z_loc.lat;
+        double z_loc_x = z_loc.lon();
+        double z_loc_y = z_loc.lat();
         if (h_base - h_lon < h_size) {
             z_loc_x = 180;
             long h_xy = h_x;
@@ -227,51 +173,15 @@ public class GeoHex {
         double h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2;
         double h_lon_x = (h_lat_y - h_y * unit_y) / h_k;
 
-        Loc h_loc = xy2loc(h_lon_x, h_lat_y);
-        if (h_loc.lon > 180) {
-            h_loc.lon -= 360;
-        } else if (h_loc.lon < -180) {
-            h_loc.lon += 360;
-        }
-        return new Zone(h_loc.lat, h_loc.lon, h_x, h_y, code);
+        Loc h_loc = xy2loc(h_lon_x, h_lat_y).normalize();
+        return new Zone(h_loc.lat(), h_loc.lon(), h_x, h_y, code);
     }
 
-    public static final class XY {
-        public double x, y;
-
-        public XY(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    public static final class Loc {
-        public double lat, lon;
-
-        public Loc(double lat, double lon) {
-            this.lat = lat;
-            this.lon = lon;
-        }
-    }
 
     // private static
-    private static XY loc2xy(double lon, double lat) {
-        double x = lon * h_base / 180.0;
-        double y = Math.log(Math.tan((90.0 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
-        y *= h_base / 180.0;
-        return new XY(x, y);
-    }
-
-    // private static
-    private static Loc xy2loc(double x, double y) {
-        double lon = (x / h_base) * 180.0;
-        double lat = (y / h_base) * 180.0;
-        lat = 180 / Math.PI * (2.0 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
-        return new Loc(lat, lon);
-    }
 
     public static String encode(double lat, double lon, int level) {
-        return getZoneByLocation(lat, lon, level).code;
+        return getZoneByLocation(lat, lon, level).code();
     }
 
     public static Zone decode(String code) {

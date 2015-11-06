@@ -1,60 +1,63 @@
 package net.teralytics.geohex
 
-import org.geohex.geohex4j.GeoHex
 import org.scalatest.{ FunSuite, Matchers }
 
 class CompatibilityTest extends FunSuite with Matchers {
 
+  import org.geohex.geohex4j.GeoHex._
+
+  import GeoHex._
+
   test("invalid arguments") {
 
     intercept[IllegalArgumentException] {
-      GeoHex.encode(-91, 100, 1)
+      encode(-91, 100, 1)
     }
 
     intercept[IllegalArgumentException] {
-      GeoHex.encode(91, 100, 1)
+      encode(91, 100, 1)
     }
 
     intercept[IllegalArgumentException] {
-      GeoHex.encode(90, 181, 1)
+      encode(90, 181, 1)
     }
 
     intercept[IllegalArgumentException] {
-      GeoHex.encode(-90, -181, 1)
+      encode(-90, -181, 1)
     }
 
     intercept[IllegalArgumentException] {
-      GeoHex.encode(0, 180, -1)
+      encode(0, 180, -1)
     }
 
     intercept[IllegalArgumentException] {
-      GeoHex.encode(0, -180, 25)
+      encode(0, -180, 25)
     }
   }
 
   test("convert coordinates to GeoHex") {
 
-    assert(GeoHex.encode(35.780516755235475, 139.57031250000003, 9) == "XM566370240")
+    assert(encode(35.780516755235475, 139.57031250000003, 9) == "XM566370240")
 
-    assert(GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9).code == "XM566370240")
+    assert(getZoneByLocation(35.780516755235475, 139.57031250000003, 9).code == "XM566370240")
 
     readResource("/test-files/testdata_ll2hex.txt")
       .filterNot(_.startsWith("#"))
       .foreach { line =>
         val Array(lat, lon, level, expected) = line.split(",")
-        val actual = GeoHex.encode(lat.toDouble, lon.toDouble, level.toInt)
+        val actual = encode(lat.toDouble, lon.toDouble, level.toInt)
         assert(actual == expected)
       }
   }
 
   test("convert GeoHex to coordinates") {
 
-    val zone1 = GeoHex.decode("XM566370240")
+    val zone1 = decode("XM566370240")
     assertDouble(35.78044332128244, zone1.lat)
     assertDouble(139.57018747142206, zone1.lon)
     assert(zone1.level == 9)
 
-    val zone2 = GeoHex.getZoneByCode("XM566370240")
+    val zone2 = getZoneByCode("XM566370240")
     assertDouble(35.78044332128244, zone2.lat)
     assertDouble(139.57018747142206, zone2.lon)
     assert(zone2.level == 9)
@@ -63,7 +66,7 @@ class CompatibilityTest extends FunSuite with Matchers {
       .filterNot(_.startsWith("#"))
       .foreach { line =>
         val Array(lat, lon, level, code) = line.split(",")
-        val zone = GeoHex.decode(code)
+        val zone = decode(code)
         assert(zone.level == level.toInt)
         assertDouble(lat.toDouble, zone.lat)
 
@@ -80,37 +83,37 @@ class CompatibilityTest extends FunSuite with Matchers {
 
   test("convert coordinates to GeoHex polygon") {
 
-    val zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9)
+    val zone = getZoneByLocation(35.780516755235475, 139.57031250000003, 9)
     val polygon = Seq(
-      new GeoHex.Loc(35.78044332128244, 139.56951006790973),
-      new GeoHex.Loc(35.78091924645671, 139.5698487696659),
-      new GeoHex.Loc(35.78091924645671, 139.57052617317822),
-      new GeoHex.Loc(35.78044332128244, 139.5708648749344),
-      new GeoHex.Loc(35.779967393259035, 139.57052617317822),
-      new GeoHex.Loc(35.779967393259035, 139.5698487696659))
+      Loc(35.78044332128244, 139.56951006790973),
+      Loc(35.78091924645671, 139.5698487696659),
+      Loc(35.78091924645671, 139.57052617317822),
+      Loc(35.78044332128244, 139.5708648749344),
+      Loc(35.779967393259035, 139.57052617317822),
+      Loc(35.779967393259035, 139.5698487696659))
     assertPolygon(polygon, zone.getHexCoords)
 
     readResource("/test-files/testdata_ll2polygon.txt")
       .filterNot(_.startsWith("#"))
       .foreach { line =>
         val Array(lat, lon, level, poly@_*) = line.split(",")
-        val z = GeoHex.getZoneByLocation(lat.toDouble, lon.toDouble, level.toInt)
+        val z = getZoneByLocation(lat.toDouble, lon.toDouble, level.toInt)
         val expected_polygon = poly.map(_.toDouble).grouped(2)
-          .map { case Seq(lat2, lon2) => new GeoHex.Loc(lat2, lon2) }
+          .map { case Seq(lat2, lon2) => new Loc(lat2, lon2) }
         assertPolygon(expected_polygon.toSeq, z.getHexCoords)
       }
   }
 
   test("convert coordinates to GeoHex size") {
 
-    val zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9)
+    val zone = getZoneByLocation(35.780516755235475, 139.57031250000003, 9)
     assertDouble(37.70410702222824, zone.getHexSize)
 
     readResource("/test-files/testdata_ll2hexsize.txt")
       .filterNot(_.startsWith("#"))
       .foreach { line =>
         val Array(lat, lon, level, size) = line.split(",")
-        val z = GeoHex.getZoneByLocation(lat.toDouble, lon.toDouble, level.toInt)
+        val z = getZoneByLocation(lat.toDouble, lon.toDouble, level.toInt)
         assertDouble(size.toDouble, z.getHexSize)
       }
   }
@@ -123,7 +126,7 @@ class CompatibilityTest extends FunSuite with Matchers {
     assert(expected === actual +- 0.0000000000001)
   }
 
-  private def assertPolygon(expected: Iterable[GeoHex.Loc], actual: Iterable[GeoHex.Loc]) {
+  private def assertPolygon(expected: Iterable[Loc], actual: Iterable[Loc]) {
     expected.zip(actual).foreach {
       case (expectedLoc, actualLoc) =>
         assertDouble(expectedLoc.lat, actualLoc.lat)
