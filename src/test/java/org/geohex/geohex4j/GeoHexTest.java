@@ -57,12 +57,6 @@ public class GeoHexTest {
 	    br.close();
 	}
 
-	private BufferedReader readResource(String path) {
-		return new BufferedReader(
-				new InputStreamReader(
-						getClass().getResourceAsStream(path)));
-	}
-
 	@Test
 	public void testConvertGeoHexToCoordinates() throws IOException {
 		GeoHex.Zone zone1 = GeoHex.decode("XM566370240");
@@ -144,6 +138,12 @@ public class GeoHexTest {
             assertDouble(expected_hex_size, z.getHexSize());
         }
         br.close();
+    }
+
+    private BufferedReader readResource(String path) {
+        return new BufferedReader(
+                new InputStreamReader(
+                        getClass().getResourceAsStream(path)));
     }
 
     private void assertDouble(double expected, double actual) {
