@@ -4,8 +4,6 @@ import org.scalatest.{ FunSuite, Matchers }
 
 class CompatibilityTest extends FunSuite with Matchers {
 
-  import org.geohex.geohex4j.GeoHex._
-
   import GeoHex._
 
   test("invalid arguments") {

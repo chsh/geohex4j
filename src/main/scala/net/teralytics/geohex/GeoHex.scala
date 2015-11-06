@@ -68,6 +68,9 @@ object GeoHex {
     }
   }
 
+  def getZoneByLocation(lat: Double, lon: Double, level: Int): Zone =
+    org.geohex.geohex4j.GeoHex.getZoneByLocation(lat, lon, level)
+
   def getZoneByCode(code: String): Zone = {
     val level = code.length
     val h_size = calcHexSize(level)
