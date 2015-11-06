@@ -1,5 +1,7 @@
 # GeoHex
 
+[![Build Status](https://travis-ci.org/teralytics/geohex.svg?branch=master)](https://travis-ci.org/teralytics/geohex)
+
 [GeoHex](http://www.geohex.org) implementation in Scala. Forked from [geohex4j](https://github.com/chsh/geohex4j).
 
 # LICENSE
