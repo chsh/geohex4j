@@ -10,7 +10,7 @@ object GeoHex {
   private[this] val h_k = tan(h_deg)
 
   def encode(lat: Double, lon: Double, level: Int): String =
-    org.geohex.geohex4j.GeoHex.getZoneByLocation(lat, lon, level).code
+    getZoneByLocation(lat, lon, level).code
 
   def decode(code: String): Zone = getZoneByCode(code)
 
