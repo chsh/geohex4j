@@ -1,14 +1,14 @@
 package org.geohex.geohex4j;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import org.geohex.geohex4j.GeoHex;
+import static org.junit.Assert.*;
 
-public class GeoHexTest extends TestCase {
+public class GeoHexTest {
+
+	@Test
 	public void testInvalidArguments() {
 		try {
 			GeoHex.encode(-91,100,1);
@@ -35,13 +35,14 @@ public class GeoHexTest extends TestCase {
 			fail();
 		} catch (IllegalArgumentException expected) {}
 	}
+
+	@Test
 	public void testConvertCoordinatesToGeoHex() throws IOException {
 		String c = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
 		assertEquals("XM566370240", c);
 		GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
 		assertEquals("XM566370240", zone.code);
-		FileReader r = new FileReader("test-files/testdata_ll2hex.txt");
-	    BufferedReader br = new BufferedReader(r);
+		BufferedReader br = readResource("/test-files/testdata_ll2hex.txt");
 	    String line;
 	    while ((line = br.readLine()) != null) {
 	    	if (line.charAt(0) == '#') continue;
@@ -55,6 +56,14 @@ public class GeoHexTest extends TestCase {
 	    }
 	    br.close();
 	}
+
+	private BufferedReader readResource(String path) {
+		return new BufferedReader(
+				new InputStreamReader(
+						getClass().getResourceAsStream(path)));
+	}
+
+	@Test
 	public void testConvertGeoHexToCoordinates() throws IOException {
 		GeoHex.Zone zone1 = GeoHex.decode("XM566370240");
 		assertDouble(35.78044332128244, zone1.lat);
@@ -64,8 +73,7 @@ public class GeoHexTest extends TestCase {
 		assertDouble(35.78044332128244, zone2.lat);
 		assertDouble(139.57018747142206, zone2.lon);
 		assertEquals(9, zone2.level);
-	    FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
-	    BufferedReader br = new BufferedReader(r);
+		BufferedReader br = readResource("/test-files/testdata_hex2ll.txt");
 	    String line;
 	    while ((line = br.readLine()) != null) {
 	    	String[] v = line.split(",");
@@ -84,7 +92,8 @@ public class GeoHexTest extends TestCase {
 	    }
 	    br.close();
 	}
-	
+
+	@Test
     public void testConvertCoordinatesToGeoHexPolygon() throws IOException {
         GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475,139.57031250000003,9);
         double[][] polygon = {
@@ -96,8 +105,7 @@ public class GeoHexTest extends TestCase {
         		{ 35.779967393259035,139.5698487696659 }
         };
         assertPolygon(polygon, zone.getHexCoords());
-        FileReader r = new FileReader("test-files/testdata_ll2polygon.txt");
-        BufferedReader br = new BufferedReader(r);
+		BufferedReader br = readResource("/test-files/testdata_ll2polygon.txt");
         String line;
         while ((line = br.readLine()) != null) {
             if (line.charAt(0) == '#') continue;
@@ -118,12 +126,12 @@ public class GeoHexTest extends TestCase {
         }
         br.close();
     }
- 
+
+	@Test
     public void testConvertCoordinatesToGeoHexSize() throws IOException {
     	GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475,139.57031250000003,9);
-        assertEquals(37.70410702222824, zone.getHexSize());
-        FileReader r = new FileReader("test-files/testdata_ll2hexsize.txt");
-        BufferedReader br = new BufferedReader(r);
+        assertDouble(37.70410702222824, zone.getHexSize());
+		BufferedReader br = readResource("/test-files/testdata_ll2hexsize.txt");
         String line;
         while ((line = br.readLine()) != null) {
             if (line.charAt(0) == '#') continue;
@@ -133,14 +141,13 @@ public class GeoHexTest extends TestCase {
             int level = Integer.parseInt(v[2]);
             double expected_hex_size = Double.parseDouble(v[3]);
             GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
-            assertEquals(expected_hex_size, z.getHexSize());
+            assertDouble(expected_hex_size, z.getHexSize());
         }
         br.close();
     }
 
     private void assertDouble(double expected, double actual) {
-		assertEquals((long)(expected * 10000000000000L),
-				(long)(actual * 10000000000000L));
+		assertEquals(expected, actual, 0.0000000000001);
 	}
 
     private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
