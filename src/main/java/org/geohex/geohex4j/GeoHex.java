@@ -7,21 +7,16 @@ package org.geohex.geohex4j;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static net.teralytics.geohex.GeoHex.*;
 
 public class GeoHex {
 
-    // *** Share with all instances ***
     public static final String h_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     public static final double h_base = 20037508.34;
     public static final double h_deg = Math.PI * (30.0 / 180.0);
     public static final double h_k = Math.tan(h_deg);
 
-    // private class
-
-    // public static
     public static Zone getZoneByLocation(double lat, double lon, int level) {
         if (lat < -90 || lat > 90)
             throw new IllegalArgumentException("latitude must be between -90 and 90");
@@ -116,86 +111,5 @@ public class GeoHex {
         int h_a2 = h_1 % 30;
 
         return new Zone(z_loc_y, z_loc_x, h_x, h_y, String.valueOf(h_key.charAt(h_a1)) + h_key.charAt(h_a2) + h_2);
-    }
-
-    public static Zone getZoneByCode(String code) {
-        int level = code.length();
-        double h_size = calcHexSize(level);
-        double unit_x = 6 * h_size;
-        double unit_y = 6 * h_size * h_k;
-        long h_x = 0;
-        long h_y = 0;
-        String h_dec9 = "" + (h_key.indexOf(code.charAt(0)) * 30 + h_key.indexOf(code.charAt(1))) + code.substring(2);
-        if (regMatch(h_dec9.charAt(0), INC15) && regMatch(h_dec9.charAt(1), EXC125) && regMatch(h_dec9.charAt(2), EXC125)) {
-            if (h_dec9.charAt(0) == '5') {
-                h_dec9 = "7" + h_dec9.substring(1, h_dec9.length());
-            } else if (h_dec9.charAt(0) == '1') {
-                h_dec9 = "3" + h_dec9.substring(1, h_dec9.length());
-            }
-        }
-        int d9xlen = h_dec9.length();
-        for (int i = 0; i < level + 1 - d9xlen; i++) {
-            h_dec9 = "0" + h_dec9;
-            d9xlen++;
-        }
-        StringBuilder h_dec3 = new StringBuilder();
-        for (int i = 0; i < d9xlen; i++) {
-            int dec9i = Integer.parseInt("" + h_dec9.charAt(i));
-            String h_dec0 = Integer.toString(dec9i, 3);
-            if (h_dec0.length() == 1) {
-                h_dec3.append("0");
-            }
-            h_dec3.append(h_dec0);
-        }
-
-        List<Character> h_decx = new ArrayList<>();
-        List<Character> h_decy = new ArrayList<>();
-
-        for (int i = 0; i < h_dec3.length() / 2; i++) {
-            h_decx.add(h_dec3.charAt(i * 2));
-            h_decy.add(h_dec3.charAt(i * 2 + 1));
-        }
-
-        for (int i = 0; i <= level; i++) {
-            double h_pow = Math.pow(3, level - i);
-            if (h_decx.get(i) == '0') {
-                h_x -= h_pow;
-            } else if (h_decx.get(i) == '2') {
-                h_x += h_pow;
-            }
-            if (h_decy.get(i) == '0') {
-                h_y -= h_pow;
-            } else if (h_decy.get(i) == '2') {
-                h_y += h_pow;
-            }
-        }
-
-        double h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2;
-        double h_lon_x = (h_lat_y - h_y * unit_y) / h_k;
-
-        Loc h_loc = xy2loc(h_lon_x, h_lat_y).normalize();
-        return new Zone(h_loc.lat(), h_loc.lon(), h_x, h_y, code);
-    }
-
-
-    // private static
-
-    public static String encode(double lat, double lon, int level) {
-        return getZoneByLocation(lat, lon, level).code();
-    }
-
-    public static Zone decode(String code) {
-        return getZoneByCode(code);
-    }
-
-    private static final Pattern INC15 = Pattern.compile("[15]");
-    private static final Pattern EXC125 = Pattern.compile("[^125]");
-
-    private static boolean regMatch(CharSequence cs, Pattern pat) {
-        return pat.matcher(cs).matches();
-    }
-
-    private static boolean regMatch(char ch, Pattern pat) {
-        return regMatch("" + ch, pat);
     }
 }
