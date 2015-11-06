@@ -107,14 +107,14 @@ class CompatibilityTest extends FunSuite with Matchers {
   test("convert coordinates to GeoHex size") {
 
     val zone = getZoneByLocation(35.780516755235475, 139.57031250000003, 9)
-    assertDouble(37.70410702222824, zone.getHexSize)
+    assertDouble(37.70410702222824, zone.size)
 
     readResource("/test-files/testdata_ll2hexsize.txt")
       .filterNot(_.startsWith("#"))
       .foreach { line =>
         val Array(lat, lon, level, size) = line.split(",")
         val z = getZoneByLocation(lat.toDouble, lon.toDouble, level.toInt)
-        assertDouble(size.toDouble, z.getHexSize)
+        assertDouble(size.toDouble, z.size)
       }
   }
 

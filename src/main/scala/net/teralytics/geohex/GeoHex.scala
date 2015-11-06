@@ -6,7 +6,7 @@ import scala.math._
 object GeoHex {
   private[this] val h_key = ('A' to 'Z') ++ ('a' to 'z')
   private[this] val h_base = 20037508.34
-  private[this] val h_deg = Pi * (30.0 / 180.0)
+  private[this] val h_deg = toRadians(30.0)
   private[this] val h_k = tan(h_deg)
 
   def encode(lat: Double, lon: Double, level: Int): String =
@@ -17,9 +17,8 @@ object GeoHex {
   def calcHexSize(level: Int): Double = h_base / pow(3.0, level + 1)
 
   def loc2xy(lon: Double, lat: Double): XY = {
-    val x: Double = lon * h_base / 180.0
-    var y: Double = Math.log(Math.tan((90.0 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0)
-    y *= h_base / 180.0
+    val x = lon * h_base / 180.0
+    val y = h_base * log(tan((90.0 + lat) * Pi / 360.0)) / Pi
     XY(x, y)
   }
 
@@ -32,11 +31,11 @@ object GeoHex {
 
   case class Loc(lat: Double = 0, lon: Double = 0) {
     def normalize(): Loc = {
-      if (lon > 180) {
-        copy(lon = lon - 360)
-      } else if (lon < -180) {
-        copy(lon = lon + 360)
-      } else this
+      val l =
+        if (lon > 180) lon - 360
+        else if (lon < -180) lon + 360
+        else lon
+      if (lon != l) copy(lon = l) else this
     }
   }
 
@@ -44,28 +43,28 @@ object GeoHex {
 
   case class Zone(code: String, lat: Double = 0, lon: Double = 0, x: Long = 0, y: Long = 0) {
 
-    val level = code.length - 2
-
     def this(lat: Double, lon: Double, x: Long, y: Long, code: String) = this(code, lat, lon, x, y)
 
-    def getHexSize: Double = calcHexSize(level + 2)
+    val level: Int = code.length - 2
+
+    val size: Double = calcHexSize(level + 2)
 
     def getHexCoords: Array[Loc] = {
-      val h_lat: Double = this.lat
-      val h_lon: Double = this.lon
-      val h_xy: XY = loc2xy(h_lon, h_lat)
-      val h_x: Double = h_xy.x
-      val h_y: Double = h_xy.y
-      val h_deg: Double = Math.tan(Math.PI * (60.0 / 180.0))
-      val h_size: Double = this.getHexSize
-      val h_top: Double = xy2loc(h_x, h_y + h_deg * h_size).lat
-      val h_btm: Double = xy2loc(h_x, h_y - h_deg * h_size).lat
-      val h_l: Double = xy2loc(h_x - 2 * h_size, h_y).lon
-      val h_r: Double = xy2loc(h_x + 2 * h_size, h_y).lon
-      val h_cl: Double = xy2loc(h_x - 1 * h_size, h_y).lon
-      val h_cr: Double = xy2loc(h_x + 1 * h_size, h_y).lon
-      Array[GeoHex.Loc](new GeoHex.Loc(h_lat, h_l), new GeoHex.Loc(h_top, h_cl), new GeoHex.Loc(h_top, h_cr),
-        new GeoHex.Loc(h_lat, h_r), new GeoHex.Loc(h_btm, h_cr), new GeoHex.Loc(h_btm, h_cl))
+      val xy = loc2xy(lon, lat)
+      val deg = tan(Pi / 3)
+      val h_top = xy2loc(xy.x, xy.y + deg * size).lat
+      val h_btm = xy2loc(xy.x, xy.y - deg * size).lat
+      val h_l = xy2loc(xy.x - 2 * size, xy.y).lon
+      val h_r = xy2loc(xy.x + 2 * size, xy.y).lon
+      val h_cl = xy2loc(xy.x - size, xy.y).lon
+      val h_cr = xy2loc(xy.x + size, xy.y).lon
+      Array(
+        Loc(lat, h_l),
+        Loc(h_top, h_cl),
+        Loc(h_top, h_cr),
+        Loc(lat, h_r),
+        Loc(h_btm, h_cr),
+        Loc(h_btm, h_cl))
     }
   }
 
@@ -149,8 +148,8 @@ object GeoHex {
       }
     }
 
-    val h_lat_y: Double = (h_k * h_x * unit_x + h_y * unit_y) / 2
-    val h_lon_x: Double = (h_lat_y - h_y * unit_y) / h_k
+    val h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2
+    val h_lon_x = (h_lat_y - h_y * unit_y) / h_k
     val h_loc = xy2loc(h_lon_x, h_lat_y).normalize()
     Zone(code, h_loc.lat, h_loc.lon, h_x, h_y)
   }
