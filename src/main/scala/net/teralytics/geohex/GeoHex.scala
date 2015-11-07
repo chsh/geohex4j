@@ -1,6 +1,5 @@
 package net.teralytics.geohex
 
-import scala.collection.mutable
 import scala.math._
 
 object GeoHex {
@@ -102,40 +101,24 @@ object GeoHex {
       }
     }
 
-    val h_decx = mutable.ArrayBuffer[Char]()
-    val h_decy = mutable.ArrayBuffer[Char]()
+    val decXY = h_dec3.toArray.grouped(2)
+      .map { case Array(x, y) => (x, y) }
+      .toIndexedSeq
 
-    {
-      var i = 0
-      while (i < h_dec3.length / 2) {
-        h_decx.append(h_dec3(i * 2))
-        h_decy.append(h_dec3(i * 2 + 1))
-        i += 1
+    val (h_x, h_y) = decXY.zipWithIndex
+      .foldLeft((0L,0L)) {
+        case ((xAcc, yAcc), ((xChar, yChar), i)) =>
+          val h_pow = pow(3, length - i).toLong
+          val x =
+            if (xChar == '0') xAcc - h_pow
+            else if (xChar == '2') xAcc + h_pow
+            else xAcc
+          val y =
+            if (yChar == '0') yAcc - h_pow
+            else if (yChar == '2') yAcc + h_pow
+            else yAcc
+          (x, y)
       }
-    }
-
-    var h_x = 0L
-    var h_y = 0L
-
-    {
-      var i = 0
-      while (i <= length) {
-        val h_pow = pow(3, length - i).toLong
-        if (h_decx(i) == '0') {
-          h_x -= h_pow
-        }
-        else if (h_decx(i) == '2') {
-          h_x += h_pow
-        }
-        if (h_decy(i) == '0') {
-          h_y -= h_pow
-        }
-        else if (h_decy(i) == '2') {
-          h_y += h_pow
-        }
-        i += 1
-      }
-    }
 
     val h_size = calcHexSize(length - 2)
     val unit_x = 6 * h_size
