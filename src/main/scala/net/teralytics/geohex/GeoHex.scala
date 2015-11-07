@@ -71,42 +71,22 @@ object GeoHex {
 
   def getZoneByCode(code: String): Zone = {
 
-    val length = code.length
-    var dec9 = toNumeric(code)
-    var d9xlen = dec9.length
+    val dec9 = toNumeric(code)
 
-    {
-      var i = 0
-      while (i < length + 1 - d9xlen) {
-        {
-          dec9 = "0" + dec9
-          d9xlen += 1
-          i += 1
-        }
-      }
-    }
+    val dec3 = dec9
+      .map(_.toString.toInt)
+      .map(Integer.toString(_, 3))
+      .map { x => if (x.length > 1) x else s"0$x" }
+      .mkString
 
-    val h_dec3 = new StringBuilder()
-
-    {
-      var i = 0
-      while (i < d9xlen) {
-        val dec9i = dec9(i).toString.toInt
-        val h_dec0 = Integer.toString(dec9i, 3)
-        if (h_dec0.length == 1) {
-          h_dec3.append("0")
-        }
-        h_dec3.append(h_dec0)
-        i += 1
-      }
-    }
-
-    val decXY = h_dec3.toArray.grouped(2)
+    val decXY = dec3.toArray.grouped(2)
       .map { case Array(x, y) => (x, y) }
       .toIndexedSeq
 
+    val length = code.length
+
     val (h_x, h_y) = decXY.zipWithIndex
-      .foldLeft((0L,0L)) {
+      .foldLeft((0L, 0L)) {
         case ((xAcc, yAcc), ((xChar, yChar), i)) =>
           val h_pow = pow(3, length - i).toLong
           val x =
@@ -133,10 +113,11 @@ object GeoHex {
     val alpha = h_key.indexOf(code(0)) * 30 + h_key.indexOf(code(1))
     val dec9 = alpha.toString + code.substring(2)
     val replace = """([15])([^125])(\d*)""".r
-    dec9 match {
+    val unpadded = dec9 match {
       case replace(a, _*) if a == "5" => "7" + dec9.tail
       case replace(a, _*) if a == "1" => "3" + dec9.tail
       case _ => dec9
     }
+    Array.fill(code.length + 1 - unpadded.length)('0').mkString + unpadded
   }
 }
