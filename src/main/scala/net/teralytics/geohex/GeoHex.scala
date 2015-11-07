@@ -6,8 +6,7 @@ import scala.math._
 object GeoHex {
   private[this] val h_key = ('A' to 'Z') ++ ('a' to 'z')
   private[this] val h_base = 20037508.34
-  private[this] val h_deg = toRadians(30.0)
-  private[this] val h_k = tan(h_deg)
+  private[this] val h_k = tan(toRadians(30.0))
 
   def encode(lat: Double, lon: Double, level: Int): String =
     getZoneByLocation(lat, lon, level).code
@@ -72,32 +71,16 @@ object GeoHex {
     org.geohex.geohex4j.GeoHex.getZoneByLocation(lat, lon, level)
 
   def getZoneByCode(code: String): Zone = {
+
     val level = code.length
-    val h_size = calcHexSize(level)
-    val unit_x = 6 * h_size
-    val unit_y = 6 * h_size * h_k
-    var h_x = 0L
-    var h_y = 0L
-    var h_dec9 = "" + (h_key.indexOf(code(0)) * 30 + h_key.indexOf(code(1))) + code.substring(2)
-
-    if (isOneOrFive(h_dec9(0))
-      && isNotOneTwoOrFive(h_dec9(1))
-      && isNotOneTwoOrFive(h_dec9(2))) {
-
-      if (h_dec9(0) == '5') {
-        h_dec9 = "7" + h_dec9.substring(1, h_dec9.length)
-      } else if (h_dec9(0) == '1') {
-        h_dec9 = "3" + h_dec9.substring(1, h_dec9.length)
-      }
-    }
-
-    var d9xlen = h_dec9.length
+    var dec9 = toNumeric(code)
+    var d9xlen = dec9.length
 
     {
       var i = 0
       while (i < level + 1 - d9xlen) {
         {
-          h_dec9 = "0" + h_dec9
+          dec9 = "0" + dec9
           d9xlen += 1
           i += 1
         }
@@ -109,7 +92,7 @@ object GeoHex {
     {
       var i = 0
       while (i < d9xlen) {
-        val dec9i = h_dec9(i).toString.toInt
+        val dec9i = dec9(i).toString.toInt
         val h_dec0 = Integer.toString(dec9i, 3)
         if (h_dec0.length == 1) {
           h_dec3.append("0")
@@ -131,6 +114,9 @@ object GeoHex {
       }
     }
 
+    var h_x = 0L
+    var h_y = 0L
+
     {
       var i = 0
       while (i <= level) {
@@ -151,14 +137,23 @@ object GeoHex {
       }
     }
 
+    val h_size = calcHexSize(level)
+    val unit_x = 6 * h_size
+    val unit_y = 6 * h_size * h_k
     val h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2
     val h_lon_x = (h_lat_y - h_y * unit_y) / h_k
     val h_loc = xy2loc(h_lon_x, h_lat_y).normalize()
     Zone(code, h_loc.lat, h_loc.lon, h_x, h_y)
   }
 
-  private[this] def isOneOrFive(c: Char): Boolean = c == '1' || c == '5'
-
-  private[this] def isNotOneTwoOrFive(c: Char): Boolean =
-    c != '1' && c != '2' && c != '5'
+  private[this] def toNumeric(code: String): String = {
+    val alpha = h_key.indexOf(code(0)) * 30 + h_key.indexOf(code(1))
+    val dec9 = alpha.toString + code.substring(2)
+    val replace = """([15])([^125])(\d*)""".r
+    dec9 match {
+      case replace(a, _*) if a == "5" => "7" + dec9.tail
+      case replace(a, _*) if a == "1" => "3" + dec9.tail
+      case _ => dec9
+    }
+  }
 }
