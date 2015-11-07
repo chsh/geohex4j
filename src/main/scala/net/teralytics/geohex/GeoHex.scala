@@ -118,6 +118,7 @@ object GeoHex {
       case replace(a, _*) if a == "1" => "3" + dec9.tail
       case _ => dec9
     }
-    Array.fill(code.length + 1 - unpadded.length)('0').mkString + unpadded
+    val padding = "0" * (code.length + 1 - unpadded.length)
+    padding + unpadded
   }
 }
