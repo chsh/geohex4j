@@ -8,7 +8,13 @@ package org.geohex.geohex4j;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.teralytics.geohex.GeoHex.*;
+import net.teralytics.geohex.GeoHex.Zone;
+import net.teralytics.geohex.GeoHex.Loc;
+import net.teralytics.geohex.GeoHex.XY;
+
+import static net.teralytics.geohex.GeoHex.loc2xy;
+import static net.teralytics.geohex.GeoHex.xy2loc;
+import static net.teralytics.geohex.GeoHex.calcHexSize;
 
 public class GeoHex {
 
