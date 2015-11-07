@@ -25,12 +25,10 @@ public class GeoHex {
         if (level < 0 || level > 15)
             throw new IllegalArgumentException("level must be between 0 and 15");
 
-        level += 2;
-        double h_size = calcHexSize(level);
-
         XY z_xy = loc2xy(lon, lat);
         double lon_grid = z_xy.x();
         double lat_grid = z_xy.y();
+        double h_size = calcHexSize(level);
         double unit_x = 6 * h_size;
         double unit_y = 6 * h_size * h_k;
         double h_pos_x = (lon_grid + lat_grid / h_k) / unit_x;
@@ -76,8 +74,9 @@ public class GeoHex {
         long mod_y = h_y;
 
 
-        for (int i = 0; i <= level; i++) {
-            double h_pow = Math.pow(3, level - i);
+        int length = level + 2;
+        for (int i = 0; i <= length; i++) {
+            double h_pow = Math.pow(3, length - i);
             if (mod_x >= Math.ceil(h_pow / 2)) {
                 code3_x.add(2);
                 mod_x -= h_pow;

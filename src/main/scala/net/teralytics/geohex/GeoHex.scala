@@ -13,7 +13,7 @@ object GeoHex {
 
   def decode(code: String): Zone = getZoneByCode(code)
 
-  def calcHexSize(level: Int): Double = h_base / pow(3.0, level + 1)
+  def calcHexSize(level: Int): Double = h_base / pow(3.0, level + 3)
 
   def loc2xy(lon: Double, lat: Double): XY = {
     val x = lon * h_base / 180.0
@@ -46,7 +46,7 @@ object GeoHex {
 
     val level: Int = code.length - 2
 
-    val size: Double = calcHexSize(level + 2)
+    val size: Double = calcHexSize(level)
 
     def getHexCoords: Array[Loc] = {
       val xy = loc2xy(lon, lat)
@@ -72,13 +72,13 @@ object GeoHex {
 
   def getZoneByCode(code: String): Zone = {
 
-    val level = code.length
+    val length = code.length
     var dec9 = toNumeric(code)
     var d9xlen = dec9.length
 
     {
       var i = 0
-      while (i < level + 1 - d9xlen) {
+      while (i < length + 1 - d9xlen) {
         {
           dec9 = "0" + dec9
           d9xlen += 1
@@ -119,8 +119,8 @@ object GeoHex {
 
     {
       var i = 0
-      while (i <= level) {
-        val h_pow = Math.pow(3, level - i).toLong
+      while (i <= length) {
+        val h_pow = pow(3, length - i).toLong
         if (h_decx(i) == '0') {
           h_x -= h_pow
         }
@@ -137,7 +137,7 @@ object GeoHex {
       }
     }
 
-    val h_size = calcHexSize(level)
+    val h_size = calcHexSize(length - 2)
     val unit_x = 6 * h_size
     val unit_y = 6 * h_size * h_k
     val h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2
