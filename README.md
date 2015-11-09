@@ -1,8 +1,25 @@
 # GeoHex
 
 [![Build Status](https://travis-ci.org/teralytics/geohex.svg?branch=master)](https://travis-ci.org/teralytics/geohex)
+[![Download](https://api.bintray.com/packages/teralytics/maven/geohex/images/download.svg)](https://bintray.com/teralytics/maven/geohex/_latestVersion)
 
 [GeoHex](http://www.geohex.org) implementation in Scala. Forked from [geohex4j](https://github.com/chsh/geohex4j).
+
+# Usage
+
+Add dependency to `build.sbt`:
+
+    resolvers += Resolver.bintrayRepo("teralytics", "maven")
+
+    libraryDependencies += "net.teralytics" %% "geohex" % "0.1.+"
+
+Use functions of the `net.teralytics.geohex.GeoHex` object:
+
+    def encode(lat: Double, lon: Double, level: Int): String
+
+    def decode(code: String): Zone
+
+    def calcHexSize(level: Int): Double
 
 # LICENSE
 
