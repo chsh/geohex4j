@@ -2,10 +2,22 @@ package net.teralytics.geohex
 
 object GeoHex {
 
+  private[this] def hexCircumradius(level: Int) = 360 / (27 * math.pow(3.0, level))
+
   def encode(lat: Double, lon: Double, level: Int): String =
     getZoneByLocation(lat, lon, level).code
 
   def decode(code: String): Zone = getZoneByCode(code)
+
+  def getZonesWithin(boundingBox: BoundingBox, level: Int): Seq[Zone] = {
+    val ((fromLat, fromLon), (toLat, toLon)) = boundingBox
+    val step = hexCircumradius(level) / 2
+    val zones = for {
+      lat <- fromLat to toLat by step
+      lon <- fromLon to toLon by step
+    } yield getZoneByLocation(lat, lon, level)
+    zones.distinct
+  }
 
   def getZoneByCode(code: String): Zone = {
 

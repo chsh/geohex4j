@@ -7,6 +7,8 @@ package object geohex {
   private[geohex] val h_base = 20037508.34
   private[geohex] val h_k = tan(toRadians(30.0))
 
+  type BoundingBox = ((Double, Double), (Double, Double))
+
   def calcHexSize(level: Int): Double = h_base / pow(3.0, level + 3)
 
   private[geohex] def unitSize(level: Int): XY = {
