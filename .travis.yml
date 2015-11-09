@@ -1,10 +1,18 @@
 language: scala
 
-script: sbt +test +package
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
 
-after_success:
-  - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
-      test "${TRAVIS_BRANCH}" = 'master' &&
-      sh "$TRAVIS_BUILD_DIR/travis_credentials.sh" &&
-      sbt +publish
+script:
+  - sbt +test +package
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
+after_success: >
+  test "${TRAVIS_PULL_REQUEST}" = 'false' &&
+  test "${TRAVIS_BRANCH}" = 'master' &&
+  sh "$TRAVIS_BUILD_DIR/travis_credentials.sh" &&
+  sbt +publish
