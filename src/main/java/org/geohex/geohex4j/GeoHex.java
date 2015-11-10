@@ -68,13 +68,18 @@ public class GeoHex {
             h_y = h_xy;
         }
 
-        StringBuilder h_code = new StringBuilder();
+        String h_code = encodeToNumeric(level, h_x, h_y);
+
+        String code = topCodeNumToAlpha(h_code.substring(0, 3)) + h_code.substring(3);
+
+        return new Zone(z_loc_y, z_loc_x, h_x, h_y, code);
+    }
+
+    private static String encodeToNumeric(int level, long x, long y) {
         List<Integer> code3_x = new ArrayList<>();
         List<Integer> code3_y = new ArrayList<>();
-        StringBuilder code3 = new StringBuilder();
-        StringBuilder code9 = new StringBuilder();
-        long mod_x = h_x;
-        long mod_y = h_y;
+        long mod_x = x;
+        long mod_y = y;
 
 
         int length = level + 2;
@@ -100,18 +105,19 @@ public class GeoHex {
             }
         }
 
+        StringBuilder h_code = new StringBuilder();
         for (int i = 0; i < code3_x.size(); i++) {
-            code3.append(code3_x.get(i)).append(code3_y.get(i));
-            code9.append(Integer.parseInt(code3.toString(), 3));
+            String code3 = code3_x.get(i).toString() + code3_y.get(i).toString();
+            Integer code9 = Integer.parseInt(code3, 3);
             h_code.append(code9);
-            code9.setLength(0);
-            code3.setLength(0);
         }
-        String h_2 = h_code.substring(3);
-        int h_1 = Integer.parseInt(h_code.substring(0, 3));
+        return h_code.toString();
+    }
+
+    private static String topCodeNumToAlpha(String topCodeNum) {
+        int h_1 = Integer.parseInt(topCodeNum);
         int h_a1 = (int) Math.floor(h_1 / 30);
         int h_a2 = h_1 % 30;
-
-        return new Zone(z_loc_y, z_loc_x, h_x, h_y, String.valueOf(h_key.charAt(h_a1)) + h_key.charAt(h_a2) + h_2);
+        return String.valueOf(h_key.charAt(h_a1)) + h_key.charAt(h_a2);
     }
 }
