@@ -15,7 +15,7 @@ object GeoHex {
 
   def getZoneByCode(code: String): Zone = {
 
-    val (h_x: Long, h_y: Long) = Encoding.decodeXY(code)
+    val (h_x: Long, h_y: Long) = Encoding.decode(code)
     val level = code.length - 2
     val h_size = calcHexSize(level)
     val unit_x = 6 * h_size

@@ -5,17 +5,10 @@
 
 package org.geohex.geohex4j;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.teralytics.geohex.Zone;
-import net.teralytics.geohex.Loc;
-import net.teralytics.geohex.XY;
-import net.teralytics.geohex.package$;
+import net.teralytics.geohex.*;
 
 public class GeoHex {
 
-    public static final String h_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     public static final double h_base = 20037508.34;
     public static final double h_deg = Math.PI * (30.0 / 180.0);
     public static final double h_k = Math.tan(h_deg);
@@ -68,56 +61,7 @@ public class GeoHex {
             h_y = h_xy;
         }
 
-        String h_code = encodeToNumeric(level, h_x, h_y);
-
-        String code = topCodeNumToAlpha(h_code.substring(0, 3)) + h_code.substring(3);
-
+        String code = Encoding.encode(h_x, h_y, level);
         return new Zone(z_loc_y, z_loc_x, h_x, h_y, code);
-    }
-
-    private static String encodeToNumeric(int level, long x, long y) {
-        List<Integer> code3_x = new ArrayList<>();
-        List<Integer> code3_y = new ArrayList<>();
-        long mod_x = x;
-        long mod_y = y;
-
-
-        int length = level + 2;
-        for (int i = 0; i <= length; i++) {
-            double h_pow = Math.pow(3, length - i);
-            if (mod_x >= Math.ceil(h_pow / 2)) {
-                code3_x.add(2);
-                mod_x -= h_pow;
-            } else if (mod_x <= -Math.ceil(h_pow / 2)) {
-                code3_x.add(0);
-                mod_x += h_pow;
-            } else {
-                code3_x.add(1);
-            }
-            if (mod_y >= Math.ceil(h_pow / 2)) {
-                code3_y.add(2);
-                mod_y -= h_pow;
-            } else if (mod_y <= -Math.ceil(h_pow / 2)) {
-                code3_y.add(0);
-                mod_y += h_pow;
-            } else {
-                code3_y.add(1);
-            }
-        }
-
-        StringBuilder h_code = new StringBuilder();
-        for (int i = 0; i < code3_x.size(); i++) {
-            String code3 = code3_x.get(i).toString() + code3_y.get(i).toString();
-            Integer code9 = Integer.parseInt(code3, 3);
-            h_code.append(code9);
-        }
-        return h_code.toString();
-    }
-
-    private static String topCodeNumToAlpha(String topCodeNum) {
-        int h_1 = Integer.parseInt(topCodeNum);
-        int h_a1 = (int) Math.floor(h_1 / 30);
-        int h_a2 = h_1 % 30;
-        return String.valueOf(h_key.charAt(h_a1)) + h_key.charAt(h_a2);
     }
 }
