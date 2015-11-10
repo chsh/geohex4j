@@ -8,13 +8,10 @@ package org.geohex.geohex4j;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.teralytics.geohex.GeoHex.Zone;
-import net.teralytics.geohex.GeoHex.Loc;
-import net.teralytics.geohex.GeoHex.XY;
-
-import static net.teralytics.geohex.GeoHex.loc2xy;
-import static net.teralytics.geohex.GeoHex.xy2loc;
-import static net.teralytics.geohex.GeoHex.calcHexSize;
+import net.teralytics.geohex.Zone;
+import net.teralytics.geohex.Loc;
+import net.teralytics.geohex.XY;
+import net.teralytics.geohex.package$;
 
 public class GeoHex {
 
@@ -31,10 +28,10 @@ public class GeoHex {
         if (level < 0 || level > 15)
             throw new IllegalArgumentException("level must be between 0 and 15");
 
-        XY z_xy = loc2xy(lon, lat);
+        XY z_xy = package$.MODULE$.loc2xy(lon, lat);
         double lon_grid = z_xy.x();
         double lat_grid = z_xy.y();
-        double h_size = calcHexSize(level);
+        double h_size = package$.MODULE$.calcHexSize(level);
         double unit_x = 6 * h_size;
         double unit_y = 6 * h_size * h_k;
         double h_pos_x = (lon_grid + lat_grid / h_k) / unit_x;
@@ -61,7 +58,7 @@ public class GeoHex {
         double h_lat = (h_k * h_x * unit_x + h_y * unit_y) / 2;
         double h_lon = (h_lat - h_y * unit_y) / h_k;
 
-        Loc z_loc = xy2loc(h_lon, h_lat);
+        Loc z_loc = package$.MODULE$.xy2loc(h_lon, h_lat);
         double z_loc_x = z_loc.lon();
         double z_loc_y = z_loc.lat();
         if (h_base - h_lon < h_size) {

@@ -1,6 +1,5 @@
 package net.teralytics.geohex
 
-import net.teralytics.geohex.GeoHex.Zone
 import org.scalacheck.Prop
 import org.scalatest.prop.{ Checkers, PropertyChecks }
 import org.scalatest.{ FlatSpec, Matchers }
