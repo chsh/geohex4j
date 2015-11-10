@@ -21,7 +21,7 @@ object GeoHex {
   }
 
   def getZoneByLocation(lat: Double, lon: Double, level: Int): Zone = {
-    var xy = org.geohex.geohex4j.GeoHex.getCellByLocation(lat, lon, level)
+    var xy = getCellByLocation(lat, lon, level)
     val unit = unitSize(level)
     val h_lat: Double = (h_k * xy.x * unit.x + xy.y * unit.y) / 2
     val h_lon: Double = (h_lat - xy.y * unit.y) / h_k

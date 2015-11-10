@@ -17,6 +17,10 @@ case class XY(x: Double = 0, y: Double = 0) {
   def swap: XY = XY(x = y, y = x)
 
   def cell: Cell = Cell(x.toLong, y.toLong)
+
+  def floor: Cell = Cell(x.floor.toLong, y.floor.toLong)
+
+  def round: Cell = Cell(x.round, y.round)
 }
 
 case class Cell(x: Long = 0, y: Long = 0) {
