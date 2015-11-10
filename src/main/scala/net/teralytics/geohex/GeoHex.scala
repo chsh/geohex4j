@@ -1,17 +1,11 @@
 package net.teralytics.geohex
 
-import scala.math._
-
 object GeoHex {
-  private[this] val h_k = tan(toRadians(30.0))
 
   def encode(lat: Double, lon: Double, level: Int): String =
     getZoneByLocation(lat, lon, level).code
 
   def decode(code: String): Zone = getZoneByCode(code)
-
-  def getZoneByLocation(lat: Double, lon: Double, level: Int): Zone =
-    org.geohex.geohex4j.GeoHex.getZoneByLocation(lat, lon, level)
 
   def getZoneByCode(code: String): Zone = {
 
@@ -24,5 +18,23 @@ object GeoHex {
     val h_lon_x = (h_lat_y - h_y * unit_y) / h_k
     val h_loc = xy2loc(h_lon_x, h_lat_y).normalize()
     Zone(code, h_loc.lat, h_loc.lon, h_x, h_y)
+  }
+
+  def getZoneByLocation(lat: Double, lon: Double, level: Int): Zone = {
+    var xy = org.geohex.geohex4j.GeoHex.getCellByLocation(lat, lon, level)
+    val unit = unitSize(level)
+    val h_lat: Double = (h_k * xy.x * unit.x + xy.y * unit.y) / 2
+    val h_lon: Double = (h_lat - xy.y * unit.y) / h_k
+    val coord: XY = XY(h_lon, h_lat)
+    val size = calcHexSize(level)
+    if (h_base - coord.x < size) {
+      xy = xy.swap
+    }
+    var z_loc = xy2loc(coord.x, coord.y)
+    if (h_base - h_lon < size) {
+      z_loc = Loc(z_loc.lat, 180)
+    }
+    val code: String = Encoding.encode(xy.x, xy.y, level)
+    Zone(code, z_loc.lat, z_loc.lon, xy.x, xy.y)
   }
 }

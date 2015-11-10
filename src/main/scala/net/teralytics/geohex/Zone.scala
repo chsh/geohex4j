@@ -12,7 +12,17 @@ case class Loc(lat: Double = 0, lon: Double = 0) {
   }
 }
 
-case class XY(x: Double = 0, y: Double = 0)
+case class XY(x: Double = 0, y: Double = 0) {
+
+  def swap: XY = XY(x = y, y = x)
+
+  def cell: Cell = Cell(x.toLong, y.toLong)
+}
+
+case class Cell(x: Long = 0, y: Long = 0) {
+
+  def swap: Cell = Cell(x = y, y = x)
+}
 
 case class Zone(code: String, lat: Double = 0, lon: Double = 0, x: Long = 0, y: Long = 0) {
 

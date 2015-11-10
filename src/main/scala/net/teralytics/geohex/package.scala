@@ -5,8 +5,14 @@ import scala.math._
 package object geohex {
 
   private[geohex] val h_base = 20037508.34
+  private[geohex] val h_k = tan(toRadians(30.0))
 
   def calcHexSize(level: Int): Double = h_base / pow(3.0, level + 3)
+
+  def unitSize(level: Int): XY = {
+    val size = calcHexSize(level)
+    XY(6 * size, 6 * size * h_k)
+  }
 
   def loc2xy(lon: Double, lat: Double): XY = {
     val x = lon * h_base / 180.0
