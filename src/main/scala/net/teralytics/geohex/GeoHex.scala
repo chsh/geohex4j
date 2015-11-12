@@ -16,7 +16,8 @@ object GeoHex {
     val unit_y = 6 * h_size * h_k
     val h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2
     val h_lon_x = (h_lat_y - h_y * unit_y) / h_k
-    val h_loc = xy2loc(h_lon_x, h_lat_y).normalize()
+    val h_loc = xy2loc(h_lon_x, h_lat_y)
+      .normalize()
     Zone(code, h_loc.lat, h_loc.lon, h_x, h_y)
   }
 

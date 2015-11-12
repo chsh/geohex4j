@@ -3,12 +3,22 @@ package net.teralytics.geohex
 import scala.math._
 
 case class Loc(lat: Double = 0, lon: Double = 0) {
-  def normalize(): Loc = {
-    val l =
-      if (lon > 180) lon - 360
-      else if (lon < -180) lon + 360
-      else lon
-    if (lon != l) copy(lon = l) else this
+
+  def normalize(): Loc = Loc(
+    mod(lat, (-90, 90)),
+    mod(lon, (-180, 180)))
+
+  /**
+    * Modulo of the `value` in a `range`.
+    * @param range (min, max] range of values.
+    */
+  private def mod(value: Double, range: (Double, Double)): Double = {
+    val (min, max) = range
+    val norm = (value - min) % (max - min) + min
+    val res = if (norm == min) max else norm
+    assert(res > min, s"$res should be > $min")
+    assert(res <= max, s"$res should be <= $max")
+    res
   }
 }
 

@@ -11,7 +11,8 @@ crossScalaVersions := Seq("2.11.7", "2.10.5")
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.12.5" % "test")
+  "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
+  "io.spray" %%  "spray-json" % "1.3.2" % "test")
 
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 
