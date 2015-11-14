@@ -10,6 +10,8 @@ import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 public class GeoHexTest {
+    private double LOCATION_PRECISION = 0.0000000000010;
+
     @Test
     public void invalidArguments() {
         try {
@@ -48,8 +50,10 @@ public class GeoHexTest {
     public void convertCoordinatesToGeoHex() throws IOException {
         String c = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
         assertEquals("XM566370240", c);
+
         GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
         assertEquals("XM566370240", zone.code);
+
         FileReader r = new FileReader("test-files/testdata_ll2hex.txt");
         BufferedReader br = new BufferedReader(r);
         String line;
@@ -69,13 +73,15 @@ public class GeoHexTest {
     @Test
     public void convertGeoHexToCoordinates() throws IOException {
         GeoHex.Zone zone1 = GeoHex.decode("XM566370240");
-        assertEquals(35.78044332128244, zone1.lat, 0.0000000000001);
-        assertEquals(139.57018747142206, zone1.lon, 0.0000000000001);
+        assertLatitude(35.78044332128244, zone1.lat);
+        assertLongitude(139.57018747142206, zone1.lon);
         assertEquals(9, zone1.level);
+
         GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
-        assertEquals(35.78044332128244, zone2.lat, 0.0000000000001);
-        assertEquals(139.57018747142206, zone2.lon, 0.0000000000001);
+        assertLatitude(35.78044332128244, zone2.lat);
+        assertLongitude(139.57018747142206, zone2.lon);
         assertEquals(9, zone2.level);
+
         FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
         BufferedReader br = new BufferedReader(r);
         String line;
@@ -83,15 +89,8 @@ public class GeoHexTest {
             String[] v = line.split(",");
             String code = v[3];
             GeoHex.Zone zone = GeoHex.decode(code);
-            double d;
-            d = Double.parseDouble(v[0]) - zone.lat;
-            assertEquals(0, (long) d * 10000000000000L);
-            d = Double.parseDouble(v[1]) - zone.lon;
-            long dl = (long) d * 10000000000000L;
-            if (dl == -3600000000000000L || dl == 3600000000000000L) {
-                dl = 0L;
-            }
-            assertEquals(0, dl);
+            assertLatitude(Double.parseDouble(v[0]), zone.lat);
+            assertLongitude(Double.parseDouble(v[1]), zone.lon);
             assertEquals(Integer.parseInt(v[2]), zone.level);
         }
         br.close();
@@ -109,6 +108,7 @@ public class GeoHexTest {
                 {35.779967393259035, 139.5698487696659}
         };
         assertPolygon(polygon, zone.getHexCoords());
+
         FileReader r = new FileReader("test-files/testdata_ll2polygon.txt");
         BufferedReader br = new BufferedReader(r);
         String line;
@@ -135,7 +135,8 @@ public class GeoHexTest {
     @Test
     public void convertCoordinatesToGeoHexSize() throws IOException {
         GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-        assertEquals(new Double(37.70410702222824), new Double(zone.getHexSize()));
+        assertLatitude(37.70410702222824, zone.getHexSize());
+
         FileReader r = new FileReader("test-files/testdata_ll2hexsize.txt");
         BufferedReader br = new BufferedReader(r);
         String line;
@@ -147,7 +148,7 @@ public class GeoHexTest {
             int level = Integer.parseInt(v[2]);
             double expected_hex_size = Double.parseDouble(v[3]);
             GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
-            assertEquals(new Double(expected_hex_size), new Double(z.getHexSize()));
+            assertEquals(expected_hex_size, z.getHexSize(), LOCATION_PRECISION);
         }
         br.close();
     }
@@ -160,6 +161,22 @@ public class GeoHexTest {
             assertEquals(0, (long) d * 1000000000000L);
             d = latlon[1] - polygon[i].lon;
             assertEquals(0, (long) d * 1000000000000L);
+        }
+    }
+
+    private void assertLatitude(double expected_latitude, double latitude) {
+        assertEquals(expected_latitude, latitude, LOCATION_PRECISION);
+    }
+
+    private void assertLongitude(double expected_longitude, double longitude) {
+        if (Math.abs(expected_longitude - longitude) + LOCATION_PRECISION >= 360.0) {
+            if (longitude >= 0) {
+                assertEquals(expected_longitude, longitude - 360.0, LOCATION_PRECISION);
+            } else {
+                assertEquals(expected_longitude, longitude + 360.0, LOCATION_PRECISION);
+            }
+        } else {
+            assertEquals(expected_longitude, longitude, LOCATION_PRECISION);
         }
     }
 }
