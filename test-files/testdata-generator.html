@@ -1,7 +1,7 @@
 <html>
 <head>
-<title>hex_v3_core.js</title>
-<script type="text/javascript" src="ref/hex_v3_core.js"></script>
+<title>hex_v3.2_core.js</title>
+<script type="text/javascript" src="ref/hex_v3.2_core.js"></script>
 </head>
 <script>
 var lines = [
@@ -590,7 +590,7 @@ function verify_zone_by_location() {
   var res = "";
   for (var i = 0; i < lines.length; i++) {
     var ary = lines[i].split(",");
-    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+    var z = GEOHEX.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
     var code = ary[3];
     res += lines[i] + ",";
     if (z.code != code) {
@@ -607,7 +607,7 @@ function calc_zone_by_code() {
   var res = "";
   for (var i = 0; i < lines.length; i++) {
     var ary = lines[i].split(",");
-    var zone = GeoHex.getZoneByCode(ary[3]);
+    var zone = GEOHEX.getZoneByCode(ary[3]);
     // res += "line:" + lines[i] + ", zone>code:" + zone.code + ", lat:" + zone.lat + ", lon:" + zone.lon + "level:" + zone.getLevel() + "<br/>";
     res += zone.lat + "," + zone.lon + "," + zone.getLevel() + "," + zone.code + "\n";
   }
@@ -619,7 +619,7 @@ function calc_get_hex_coords_by_location() {
   var res = "";
   for (var i = 0; i < lines.length; i++) {
     var ary = lines[i].split(",");
-    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+    var z = GEOHEX.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
     var polygon = z.getHexCoords();
     var resary = new Array(3 + 2 * 6);
     resary[0] = ary[0];
@@ -638,7 +638,7 @@ function calc_get_hex_size_by_location() {
   var res = "";
   for (var i = 0; i < lines.length; i++) {
     var ary = lines[i].split(",");
-    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+    var z = GEOHEX.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
     var hex_size = z.getHexSize();
     var resary = new Array(3 + 1);
     resary[0] = ary[0];
@@ -654,7 +654,7 @@ function calc_get_xy_by_location() {
 	  var res = "";
 	  for (var i = 0; i < lines.length; i++) {
 	    var ary = lines[i].split(",");
-	    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+	    var z = GEOHEX.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
 	    var hex_size = z.getHexSize();
 	    var resary = new Array(3 + 2);
 	    resary[0] = ary[0];
@@ -671,12 +671,12 @@ function calc_get_zone_by_xy() {
 	  var res = "";
 	  for (var i = 0; i < lines.length; i++) {
 	    var ary = lines[i].split(",");
-	    var z = GeoHex.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
+	    var z = GEOHEX.getZoneByLocation(new Number(ary[0]), new Number(ary[1]), new Number(ary[2]));
 	    var hex_size = z.getHexSize();
 	    var resary = new Array(2 + 3);
 	    resary[0] = z.x;
 	    resary[1] = z.y;
-	    var z2 = GeoHex.getZoneByXY(z.x, z.y, new Number(ary[2]));
+	    var z2 = GEOHEX.getZoneByXY(z.x, z.y, new Number(ary[2]));
 	    resary[2] = z2.lat;
 	    resary[3] = z2.lon;
 	    resary[4] = z2.getLevel();
