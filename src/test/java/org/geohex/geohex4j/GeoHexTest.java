@@ -69,12 +69,12 @@ public class GeoHexTest {
     @Test
     public void convertGeoHexToCoordinates() throws IOException {
         GeoHex.Zone zone1 = GeoHex.decode("XM566370240");
-        assertDouble(35.78044332128244, zone1.lat);
-        assertDouble(139.57018747142206, zone1.lon);
+        assertEquals(35.78044332128244, zone1.lat, 0.0000000000001);
+        assertEquals(139.57018747142206, zone1.lon, 0.0000000000001);
         assertEquals(9, zone1.level);
         GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
-        assertDouble(35.78044332128244, zone2.lat);
-        assertDouble(139.57018747142206, zone2.lon);
+        assertEquals(35.78044332128244, zone2.lat, 0.0000000000001);
+        assertEquals(139.57018747142206, zone2.lon, 0.0000000000001);
         assertEquals(9, zone2.level);
         FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
         BufferedReader br = new BufferedReader(r);
@@ -150,11 +150,6 @@ public class GeoHexTest {
             assertEquals(new Double(expected_hex_size), new Double(z.getHexSize()));
         }
         br.close();
-    }
-
-    private void assertDouble(double expected, double actual) {
-        assertEquals((long) (expected * 10000000000000L),
-                (long) (actual * 10000000000000L));
     }
 
     private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
