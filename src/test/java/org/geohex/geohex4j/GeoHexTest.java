@@ -3,6 +3,8 @@ package org.geohex.geohex4j;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -54,12 +56,7 @@ public class GeoHexTest {
         GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
         assertEquals("XM566370240", zone.code);
 
-        FileReader r = new FileReader("test-files/testdata_ll2hex.txt");
-        BufferedReader br = new BufferedReader(r);
-        String line;
-        while ((line = br.readLine()) != null) {
-            if (line.charAt(0) == '#') continue;
-            String[] v = line.split(",");
+        for (String[] v : parseCsv("test-files/testdata_ll2hex.txt")) {
             double lat = Double.parseDouble(v[0]);
             double lon = Double.parseDouble(v[1]);
             int level = Integer.parseInt(v[2]);
@@ -67,7 +64,6 @@ public class GeoHexTest {
             String rcode = GeoHex.encode(lat, lon, level);
             assertEquals(code, rcode);
         }
-        br.close();
     }
 
     @Test
@@ -82,18 +78,13 @@ public class GeoHexTest {
         assertLongitude(139.57018747142206, zone2.lon);
         assertEquals(9, zone2.level);
 
-        FileReader r = new FileReader("test-files/testdata_hex2ll.txt");
-        BufferedReader br = new BufferedReader(r);
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] v = line.split(",");
+        for (String[] v : parseCsv("test-files/testdata_hex2ll.txt")) {
             String code = v[3];
             GeoHex.Zone zone = GeoHex.decode(code);
             assertLatitude(Double.parseDouble(v[0]), zone.lat);
             assertLongitude(Double.parseDouble(v[1]), zone.lon);
             assertEquals(Integer.parseInt(v[2]), zone.level);
         }
-        br.close();
     }
 
     @Test
@@ -109,12 +100,7 @@ public class GeoHexTest {
         };
         assertPolygon(polygon, zone.getHexCoords());
 
-        FileReader r = new FileReader("test-files/testdata_ll2polygon.txt");
-        BufferedReader br = new BufferedReader(r);
-        String line;
-        while ((line = br.readLine()) != null) {
-            if (line.charAt(0) == '#') continue;
-            String[] v = line.split(",");
+        for (String[] v : parseCsv("test-files/testdata_ll2polygon.txt")) {
             double lat = Double.parseDouble(v[0]);
             double lon = Double.parseDouble(v[1]);
             int level = Integer.parseInt(v[2]);
@@ -129,7 +115,6 @@ public class GeoHexTest {
             };
             assertPolygon(expected_polygon, z.getHexCoords());
         }
-        br.close();
     }
 
     @Test
@@ -137,12 +122,7 @@ public class GeoHexTest {
         GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
         assertLatitude(37.70410702222824, zone.getHexSize());
 
-        FileReader r = new FileReader("test-files/testdata_ll2hexsize.txt");
-        BufferedReader br = new BufferedReader(r);
-        String line;
-        while ((line = br.readLine()) != null) {
-            if (line.charAt(0) == '#') continue;
-            String[] v = line.split(",");
+        for (String[] v : parseCsv("test-files/testdata_ll2hexsize.txt")) {
             double lat = Double.parseDouble(v[0]);
             double lon = Double.parseDouble(v[1]);
             int level = Integer.parseInt(v[2]);
@@ -150,7 +130,6 @@ public class GeoHexTest {
             GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
             assertEquals(expected_hex_size, z.getHexSize(), LOCATION_PRECISION);
         }
-        br.close();
     }
 
     private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
@@ -178,5 +157,21 @@ public class GeoHexTest {
         } else {
             assertEquals(expected_longitude, longitude, LOCATION_PRECISION);
         }
+    }
+
+    private List<String[]> parseCsv(String file) throws IOException {
+        FileReader fileReader = new FileReader(file);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        List<String[]> list = new ArrayList<String[]>();
+        String line;
+
+        while ((line = bufferedReader.readLine()) != null) {
+            if (line.charAt(0) == '#') continue;
+            String[] verb = line.split(",");
+            list.add(verb);
+        }
+
+        bufferedReader.close();
+        return list;
     }
 }
