@@ -4,12 +4,14 @@ import scala.math._
 
 package object geohex {
 
-  private[geohex] val h_base = 20037508.34
+  private[geohex] val halfEquatorInMeters = 20037508.34
   private[geohex] val h_k = tan(toRadians(30.0))
+  private[geohex] val initialFactor = 27.0
+  private[geohex] def factor(level: Int) = initialFactor * pow(3.0, level)
 
   type BoundingBox = ((Double, Double), (Double, Double))
 
-  def calcHexSize(level: Int): Double = h_base / pow(3.0, level + 3)
+  def calcHexSize(level: Int): Double = halfEquatorInMeters / factor(level)
 
   private[geohex] def unitSize(level: Int): XY = {
     val size = calcHexSize(level)
@@ -17,14 +19,14 @@ package object geohex {
   }
 
   private[geohex] def loc2xy(lon: Double, lat: Double): XY = {
-    val x = lon * h_base / 180.0
-    val y = h_base * log(tan((90.0 + lat) * Pi / 360.0)) / Pi
+    val x = lon * halfEquatorInMeters / 180.0
+    val y = halfEquatorInMeters * log(tan((90.0 + lat) * Pi / 360.0)) / Pi
     XY(x, y)
   }
 
   private[geohex] def xy2loc(x: Double, y: Double): Loc = {
-    val lon = (x / h_base) * 180.0
-    var lat = (y / h_base) * 180.0
+    val lon = (x / halfEquatorInMeters) * 180.0
+    var lat = (y / halfEquatorInMeters) * 180.0
     lat = 180 / Pi * (2.0 * atan(exp(lat * Pi / 180.0)) - Pi / 2.0)
     new Loc(lat, lon)
   }

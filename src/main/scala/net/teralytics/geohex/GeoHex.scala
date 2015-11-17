@@ -2,7 +2,7 @@ package net.teralytics.geohex
 
 object GeoHex {
 
-  private[this] def hexCircumradius(level: Int) = 360 / (27 * math.pow(3.0, level))
+  private[this] def hexCircumradius(level: Int) = 360 / factor(level)
 
   def encode(lat: Double, lon: Double, level: Int): String =
     getZoneByLocation(lat, lon, level).code
@@ -40,11 +40,11 @@ object GeoHex {
     val h_lon: Double = (h_lat - xy.y * unit.y) / h_k
     val coord: XY = XY(h_lon, h_lat)
     val size = calcHexSize(level)
-    if (h_base - coord.x < size) {
+    if (halfEquatorInMeters - coord.x < size) {
       xy = xy.swap
     }
     var z_loc = xy2loc(coord.x, coord.y)
-    if (h_base - h_lon < size) {
+    if (halfEquatorInMeters - h_lon < size) {
       z_loc = Loc(z_loc.lat, 180)
     }
     val code: String = Encoding.encode(xy.x, xy.y, level)
