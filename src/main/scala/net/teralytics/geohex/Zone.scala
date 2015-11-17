@@ -47,7 +47,7 @@ case class Zone(code: String, lat: Double = 0, lon: Double = 0, x: Long = 0, y: 
   val size: Double = calcHexSize(level)
 
   def toWellKnownText: String = getHexCoords
-    .map(loc => s"${loc.lat} ${loc.lon}")
+    .map(loc => s"${loc.lon} ${loc.lat}")
     .mkString("POLYGON ((", ", ", "))")
 
   def getHexCoords: Array[Loc] = {
