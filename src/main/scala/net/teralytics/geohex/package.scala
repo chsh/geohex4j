@@ -11,10 +11,16 @@ package object geohex {
 
   type BoundingBox = ((Double, Double), (Double, Double))
 
-  def calcHexSize(level: Int): Double = halfEquatorInMeters / factor(level)
+  def circumradiusInDegrees(level: Int) = 360.0 / factor(level)
+
+  def circumradiusInMetersAtEquator(level: Int): Double = halfEquatorInMeters / factor(level)
+
+  def inradiusInMetersAtEquator(level: Int): Double = {
+    sin(toRadians(60)) * circumradiusInMetersAtEquator(level)
+  }
 
   private[geohex] def unitSize(level: Int): XY = {
-    val size = calcHexSize(level)
+    val size = circumradiusInMetersAtEquator(level)
     XY(6 * size, 6 * size * h_k)
   }
 

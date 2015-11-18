@@ -44,7 +44,7 @@ case class Zone(code: String, lat: Double = 0, lon: Double = 0, x: Long = 0, y: 
 
   val level: Int = code.length - 2
 
-  val size: Double = calcHexSize(level)
+  val size: Double = circumradiusInMetersAtEquator(level)
 
   def toWellKnownText: String = getHexCoords
     .map(loc => s"${loc.lon} ${loc.lat}")

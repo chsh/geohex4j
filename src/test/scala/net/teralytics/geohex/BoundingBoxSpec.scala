@@ -20,4 +20,12 @@ class BoundingBoxSpec extends FlatSpec with Matchers {
     zones.map(_.code) should contain theSameElementsAs List(
       "OY4", "OY3", "OY7", "OY8", "Ob2")
   }
+
+  it should "not mistaken lat for lon" in {
+
+    val boundingBox = ((0.0, 0.0), (30.0, 6.0))
+    val zones = GeoHex.getZonesWithin(boundingBox, level = 0)
+    zones.map(_.code) should contain theSameElementsAs List(
+      "OY", "Oc")
+  }
 }

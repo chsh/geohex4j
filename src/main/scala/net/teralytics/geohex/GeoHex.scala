@@ -2,8 +2,6 @@ package net.teralytics.geohex
 
 object GeoHex {
 
-  private[this] def hexCircumradius(level: Int) = 360 / factor(level)
-
   def encode(lat: Double, lon: Double, level: Int): String =
     getZoneByLocation(lat, lon, level).code
 
@@ -11,7 +9,7 @@ object GeoHex {
 
   def getZonesWithin(boundingBox: BoundingBox, level: Int): Seq[Zone] = {
     val ((fromLat, fromLon), (toLat, toLon)) = boundingBox
-    val step = hexCircumradius(level) / 2
+    val step = circumradiusInDegrees(level) / 2
     val zones = for {
       lat <- fromLat to toLat by step
       lon <- fromLon to toLon by step
@@ -23,7 +21,7 @@ object GeoHex {
 
     val (h_x: Long, h_y: Long) = Encoding.decode(code)
     val level = code.length - 2
-    val h_size = calcHexSize(level)
+    val h_size = circumradiusInMetersAtEquator(level)
     val unit_x = 6 * h_size
     val unit_y = 6 * h_size * h_k
     val h_lat_y = (h_k * h_x * unit_x + h_y * unit_y) / 2
@@ -39,7 +37,7 @@ object GeoHex {
     val h_lat: Double = (h_k * xy.x * unit.x + xy.y * unit.y) / 2
     val h_lon: Double = (h_lat - xy.y * unit.y) / h_k
     val coord: XY = XY(h_lon, h_lat)
-    val size = calcHexSize(level)
+    val size = circumradiusInMetersAtEquator(level)
     if (halfEquatorInMeters - coord.x < size) {
       xy = xy.swap
     }
