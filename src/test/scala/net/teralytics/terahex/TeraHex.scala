@@ -13,76 +13,63 @@ object TeraHex extends Grid {
 
     override lazy val location: LatLon = continuous(cells).toLatLon
 
-    override lazy val size: Double = cellSide(level)
+    override lazy val size: Double = TeraHex.size(level)
 
     override def geometry: Seq[LatLon] = ???
   }
 
   val topLevelCellSide: Double = 360D / 27
+  val innerRadiusToSideRatio: Double = math.cos(math.toRadians(30))
+
+  val topLevelEncoding = Encoding.topLevel
+  val subCellEncoding = Encoding.subCell
 
   def nestingFactor(level: Int = 0): Double = math.pow(3, -level)
 
-  def cellSide(level: Int = 0) = topLevelCellSide * nestingFactor(level)
+  def side(level: Int = 0) = topLevelCellSide * nestingFactor(level)
+
+  def size(level: Int = 0) = 2 * side(level) * innerRadiusToSideRatio
 
   def discrete(x: Coordinate, iterations: Int): Seq[Cell] = {
 
     @tailrec
-    def loop(
-      iteration: Int = 0,
-      zero: Coordinate = Coordinate(),
-      result: List[Cell] = List())
-    : List[Cell] =
+    def loop(iteration: Int, zero: Coordinate, result: List[Cell]): List[Cell] =
 
-      if (iteration > iterations) result.reverse
+      if (iteration >= iterations) result.reverse
       else {
-        val diff = Coordinate(x - zero)
-        val cell = Coordinate(diff.scale(1 / cellSide(iteration))).round
-        loop(iteration + 1, cell.toFractional, cell :: result)
+        val diff = x - zero
+        val cell = Coordinate(diff.scale(1.0 / size(iteration))).round
+        val zeroDelta = cell.toCoordinate.scale(size(iteration))
+        loop(iteration + 1, Coordinate(zero + zeroDelta), cell :: result)
       }
 
-    loop()
+    loop(0, Coordinate(), List())
   }
 
   def continuous(xs: Seq[Cell]): Coordinate = {
 
     @tailrec
-    def loop(
-      xs: Seq[Cell],
-      result: Coordinate = Coordinate(),
-      level: Int = 0)
-    : Coordinate = xs match {
+    def loop(xs: Seq[Cell], result: Coordinate, level: Int): Coordinate = xs match {
 
       case Nil => result
 
       case cell :: cells =>
-        val shift = cell.toFractional.scale(nestingFactor(level))
+        val shift = cell.toCoordinate.scale(size(level))
         loop(cells, Coordinate(result + shift), level + 1)
     }
 
-    loop(xs)
+    loop(xs, Coordinate(), 0)
   }
-
-  val dictionary = ('A' to 'Z') ++ ('a' to 'z')
 
   def encodeCells(cells: Seq[Cell]): String = {
     val (top :: tail) = cells
-    val topCode = Seq(top.col.toInt, top.row.toInt).map(dictionary).mkString
-
-    // TODO: consider left and right outliers
-    def encodeSubCell(c: Cell): String = (3 * (c.col.toInt + 1) + (c.row.toInt + 1)).toString
-
-    (topCode :: tail.map(encodeSubCell)).mkString
+    (topLevelEncoding.encode(top) :: tail.map(subCellEncoding.encode)).mkString
   }
 
   def decodeCells(code: String): Seq[Cell] = {
-
     val (topCode, tail) = code.splitAt(2)
-    val Array(topCol, topRow) = topCode.map(dictionary.indexOf).toArray
-    val top = Cell(Col(topCol), Row(topRow))
-
-    def decodeSubCell(ch: Char): Cell = ???
-
-    top :: tail.toList.map(decodeSubCell)
+    val subCellCodes = tail.toList.map(_.toString)
+    topLevelEncoding.decode(topCode) :: subCellCodes.map(subCellEncoding.decode)
   }
 
   override def zoneByLocation(geo: LatLon, level: Int = 0): Zone = {

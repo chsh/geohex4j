@@ -19,7 +19,7 @@ package object terahex {
 
   implicit class CellOps(val c: Cell) extends AnyVal {
 
-    def toFractional: Coordinate = Coordinate(Vector(c.row.toDouble, c.col.toDouble))
+    def toCoordinate: Coordinate = Coordinate(Vector(c.col.toDouble, c.row.toDouble))
   }
 
   implicit class ZoneOps(val z: Zone) extends AnyVal {
