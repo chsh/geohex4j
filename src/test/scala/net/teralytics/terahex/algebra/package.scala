@@ -35,7 +35,7 @@ package   object algebra {
 
     val m = Matrix(
       1.0, 0.0,
-      d.d, 0.0)
+      d.d, 1.0)
 
     mult(m, _)
   }

@@ -1,5 +1,6 @@
 package net.teralytics.terahex
 
+import net.teralytics.terahex.algebra._
 import net.teralytics.terahex.geo._
 import net.teralytics.terahex.hex._
 
@@ -48,17 +49,11 @@ object TeraHex extends Grid {
 
   def continuous(xs: Seq[Cell]): Coordinate = {
 
-    @tailrec
-    def loop(xs: Seq[Cell], result: Coordinate, level: Int): Coordinate = xs match {
+    val x = xs.zipWithIndex
+      .map { case (cell, level) => cell.toCoordinate.scale(size(level)) }
+      .foldLeft(Vector())(_ + _)
 
-      case Nil => result
-
-      case cell :: cells =>
-        val shift = cell.toCoordinate.scale(size(level))
-        loop(cells, Coordinate(result + shift), level + 1)
-    }
-
-    loop(xs, Coordinate(), 0)
+    Coordinate(x)
   }
 
   def encodeCells(cells: Seq[Cell]): String = {
