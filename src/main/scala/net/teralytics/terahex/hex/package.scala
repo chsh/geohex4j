@@ -7,8 +7,8 @@ import scala.language.implicitConversions
 
 package object hex {
 
-  private[hex] val latLon2Hex = shearY(Degrees(30))
-  private[hex] val hex2LatLon = shearY(Degrees(-30))
+  private[hex] val latLon2Hex = skewCoordinateSystem(Degrees(30))
+  private[hex] val hex2LatLon = unskewCoordinateSystem(Degrees(30))
 
   case class Coordinate(v: Vector = Vector()) extends AnyVal
 

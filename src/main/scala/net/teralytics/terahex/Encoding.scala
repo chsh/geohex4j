@@ -11,8 +11,9 @@ object Encoding {
 
   def topLevel = new Encoding {
 
-    val dictionary = ('A' to 'Z') ++ ('a' to 'z')
-    val reverseDictionary = dictionary.zipWithIndex.toMap
+    val letters = ('A' to 'Z') ++ ('a' to 'z')
+    val reverseDictionary = letters.zipWithIndex.toMap.mapValues(_ - (letters.length / 2))
+    val dictionary = reverseDictionary.toSeq.map(_.swap).toMap
 
     override def encode(cell: Cell): String =
       Seq(cell.col.toInt, cell.row.toInt)
