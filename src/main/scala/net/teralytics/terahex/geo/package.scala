@@ -6,11 +6,11 @@ import net.teralytics.terahex.algebra._
 
 package object geo {
 
-  case class Lat(lat: Double) extends AnyVal
+  case class Lat(lat: Double = 0) extends AnyVal
 
-  case class Lon(lon: Double) extends AnyVal
+  case class Lon(lon: Double = 0) extends AnyVal
 
-  case class LatLon(lon: Lon, lat: Lat)
+  case class LatLon(lon: Lon = Lon(), lat: Lat = Lat())
 
   implicit def latLonIsVector(ll: LatLon): Vector = Vector(ll.lon.lon, ll.lat.lat)
 

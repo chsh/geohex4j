@@ -1,16 +1,10 @@
 package net.teralytics
 
-import scala.language.implicitConversions
-
 import net.teralytics.terahex.algebra._
 import net.teralytics.terahex.hex._
 
 
 package object terahex {
-
-  implicit def colIsLong(c: Col): Long = c.col
-
-  implicit def rowIsLong(r: Row): Long = r.row
 
   implicit class CoordinateOps(val coord: Coordinate) {
 
@@ -19,7 +13,7 @@ package object terahex {
 
   implicit class CellOps(val c: Cell) extends AnyVal {
 
-    def toCoordinate: Coordinate = Coordinate(Vector(c.col.toDouble, c.row.toDouble))
+    def toCoordinate: Coordinate = Coordinate(Vector(c.col.col.toDouble, c.row.row.toDouble))
   }
 
   implicit class ZoneOps(val z: Zone) extends AnyVal {
