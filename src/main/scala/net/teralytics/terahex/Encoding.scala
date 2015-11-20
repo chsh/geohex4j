@@ -1,48 +1,44 @@
 package net.teralytics.terahex
 
-trait Encoding {
+trait Encoding[Code] {
 
-  def encode(cell: Cell): String
+  def encode(zone: Zone): Code
 
-  def decode(code: String): Cell
+  def decode(code: Code): Zone
 }
 
 object Encoding {
 
-  def topLevel = new Encoding {
-
-    val letters = ('a' to 'z') ++ ('A' to 'Z')
-    val reverseDictionary = letters.zipWithIndex.toMap.mapValues(_ - (letters.length / 2))
-    val dictionary = reverseDictionary.toSeq.map(_.swap).toMap
-
-    override def encode(cell: Cell): String =
-      Seq(cell.col.col.toInt, cell.row.row.toInt)
-        .map(dictionary)
-        .mkString
-
-    override def decode(code: String): Cell = {
-      val Seq(topCol, topRow) = code.map(reverseDictionary)
-      Cell(Col(topCol), Row(topRow))
-    }
-  }
-
-  def subCell = new Encoding {
+  lazy val numeric = new Encoding[BigInt] {
 
     val dictionary = IndexedSeq(
-      Cell(Col(0), Row(0)),
-      Cell(Col(-2), Row(1)),
-      Cell(Col(-1), Row(0)),
-      Cell(Col(-1), Row(1)),
-      Cell(Col(0), Row(-1)),
-      Cell(Col(0), Row(1)),
-      Cell(Col(1), Row(0)),
-      Cell(Col(1), Row(-1)),
-      Cell(Col(2), Row(-1)))
+      Cell.subS,
+      Cell.subSW,
+      Cell.subW,
+      Cell.subSE,
+      Cell.subCenter,
+      Cell.subNW,
+      Cell.subE,
+      Cell.subNE,
+      Cell.subN)
 
     val reverseDictionary = dictionary.zipWithIndex.toMap
 
-    override def encode(cell: Cell): String = reverseDictionary(cell).toString
+    private[this] def root(z: Zone): BigInt = {
+      val s = z.rootSize.round
+      assert(s <= 999 && s > 0, s"Root size must be in (0, 999]")
+      1000 + s
+    }
 
-    override def decode(code: String): Cell = dictionary(code.toInt)
+    private[this] def rootSize(code: Int): Double = code - 1000
+
+    override def encode(zone: Zone): BigInt =
+      zone.cells
+        .foldLeft(root(zone))((acc, cell) => acc * 10 + reverseDictionary(cell))
+
+    override def decode(code: BigInt): Zone = {
+      val (root, subs) = code.toString.splitAt(4)
+      Zone(rootSize(root.toInt), subs.map(ch => dictionary(ch.asDigit)))
+    }
   }
 }

@@ -1,74 +1,42 @@
 package net.teralytics.terahex
 
-import net.teralytics.terahex.geo._
+import net.teralytics.terahex.algebra._
+import net.teralytics.terahex.hex._
 
-case class Col(col: Long = 0) extends AnyVal {
+import scala.annotation.tailrec
 
-  def +(other: Long): Col = Col(col + other)
+case class Grid(rootSize: Double) {
 
-  def -(other: Long): Col = Col(col - other)
+  def nestingFactor(level: Int = 0): Double = math.pow(3, -level)
+
+  def size(level: Int = 0) = rootSize * nestingFactor(level)
+
+  def continuous(xs: Seq[Cell]): Coordinate = {
+
+    val x = xs.zipWithIndex
+      .map { case (cell, level) => cell.toCoordinate.scale(size(level)) }
+      .foldLeft(Vector())(_ + _)
+
+    Coordinate(x)
+  }
+
+  def discrete(x: Coordinate, iterations: Int): Seq[Cell] = {
+
+    @tailrec
+    def loop(iteration: Int, zero: Coordinate, result: List[Cell]): List[Cell] =
+
+      if (iteration >= iterations) Outliers.restructure(result)
+      else {
+        val diff = x - zero
+        val cell = Coordinate(diff.scale(1.0 / size(iteration))).round
+        val zeroDelta = cell.toCoordinate.scale(size(iteration))
+        loop(iteration + 1, Coordinate(zero + zeroDelta), cell :: result)
+      }
+
+    loop(0, Coordinate(), List())
+  }
 }
 
-case class Row(row: Long = 0) extends AnyVal {
+object Grid {
 
-  def +(other: Long): Row = Row(row + other)
-
-  def -(other: Long): Row = Row(row - other)
-}
-
-case class Cell(col: Col = Col(), row: Row = Row()) {
-
-  def moveN: Cell = Cell(col, row + 1)
-
-  def moveS: Cell = Cell(col, row - 1)
-
-  def moveNE: Cell = Cell(col + 1, row)
-
-  def moveSE: Cell = Cell(col + 1, row - 1)
-
-  def moveNW: Cell = Cell(col - 1, row + 1)
-
-  def moveSW: Cell = Cell(col - 1, row)
-}
-
-object Cell {
-
-  val subCenter = Cell()
-  val subN = subCenter.moveN
-  val subS = subCenter.moveS
-  val subE = subCenter.moveNE.moveSE
-  val subW = subCenter.moveNW.moveSW
-  val subNE = subCenter.moveNE
-  val subNW = subCenter.moveNW
-  val subSE = subCenter.moveSE
-  val subSW = subCenter.moveSW
-
-  val outlierNE = subCenter.moveN.moveNE
-  val outlierNW = subCenter.moveN.moveNW
-  val outlierSE = subCenter.moveS.moveSE
-  val outlierSW = subCenter.moveS.moveSW
-}
-
-trait Zone {
-
-  def level: Int
-
-  def code: String
-
-  def location: LatLon
-
-  def size: Double
-
-  def geometry: Seq[LatLon]
-}
-
-trait Grid {
-
-  def zoneByLocation(geo: LatLon, level: Int = 0): Zone
-
-  def zoneByCode(code: String): Zone
-
-  def encode(geo: LatLon, level: Int = 0): String = zoneByLocation(geo, level).code
-
-  def decode(code: String): LatLon = zoneByCode(code).location
 }

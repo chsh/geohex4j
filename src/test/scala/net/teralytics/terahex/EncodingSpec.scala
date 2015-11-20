@@ -6,15 +6,23 @@ import org.scalatest.prop.PropertyChecks
 
 class EncodingSpec extends FlatSpec with PropertyChecks with Matchers {
 
-  "Terahex encoding" should "roundtrip top level cells" in forAll(topLevelCells) { cell =>
+  import Encoding._
 
-    val code = Encoding.topLevel.encode(cell)
-    Encoding.topLevel.decode(code) should be(cell)
+  "Numeric encoding" should "roundtrip root zones" in forAll(rootZones) { zone =>
+
+    val code = numeric.encode(zone)
+    numeric.decode(code) should be(zone)
   }
 
-  it should "roundtrip sub-cells" in forAll(subCells) { cell =>
+  it should "encode root zones in 4 digits" in forAll(rootZones) { zone =>
 
-    val code = Encoding.subCell.encode(cell)
-    Encoding.subCell.decode(code) should be(cell)
+    val code = numeric.encode(zone)
+    code.toString should fullyMatch regex """[\d]{4}"""
+  }
+
+  it should "roundtrip any zone" in forAll(zones) { zone =>
+
+    val code = Encoding.numeric.encode(zone)
+    Encoding.numeric.decode(code) should be(zone)
   }
 }

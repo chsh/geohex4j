@@ -1,7 +1,7 @@
 package net.teralytics.terahex
 
 import net.teralytics.terahex.geo._
-import org.scalacheck.Gen
+import org.scalacheck.{ Arbitrary, Gen }
 
 import org.scalacheck.Gen._
 
@@ -12,9 +12,6 @@ object Generators {
     lat <- chooseNum(-90d, 90d, 0d)
   } yield LatLon(Lon(lon), Lat(lat))
 
-  val topCodeRegex = "[a-zA-Z]{2}"
-  val subCodeRegex = "[0-8]{0,15}"
-  val codeRegex = s"$topCodeRegex$subCodeRegex"
   val allLevels = 0 to 15
   def levels: Gen[Int] = oneOf(allLevels) :| "level"
 
@@ -25,8 +22,17 @@ object Generators {
 
   val outliers = Gen.oneOf(Cell.outlierNE, Cell.outlierNW, Cell.outlierSE, Cell.outlierSW)
 
-  val topLevelCells = for {
-    c <- Gen.choose(-26, 25)
-    r <- Gen.choose(-26, 25)
-  } yield Cell(Col(c), Row(r))
+  val rootSizes = Gen.chooseNum(1, 999)
+
+  val grids = rootSizes.map(Grid(_))
+
+  val geoGrids = rootSizes.suchThat(_ > TeraHex.minGeoRootSize).map(Grid(_))
+
+  val rootZones = rootSizes.map(Zone(_, List()))
+
+  val zones = for {
+    root <- rootZones
+    level <- levels
+    cells <- Gen.listOfN(level, subCells)
+  } yield root.copy(cells = cells)
 }
