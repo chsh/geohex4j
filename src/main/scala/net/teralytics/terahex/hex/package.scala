@@ -14,7 +14,7 @@ package object hex {
 
   implicit class CoordinateOps(val c: Coordinate) {
 
-    def toLatLon: LatLon = hex2LatLon(c)
+    def toLatLon: LatLon = hex2LatLon(c).toLatLon
   }
 
   implicit class LatLonOps(val ll: LatLon) extends AnyVal {

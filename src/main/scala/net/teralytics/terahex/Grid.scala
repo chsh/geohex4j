@@ -36,7 +36,3 @@ case class Grid(rootSize: Double) {
     loop(0, Coordinate(), List())
   }
 }
-
-object Grid {
-
-}

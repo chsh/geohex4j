@@ -1,8 +1,8 @@
 package net.teralytics
 
 import net.teralytics.terahex.algebra._
-import net.teralytics.terahex.geo.LatLon
 import net.teralytics.terahex.hex._
+import net.teralytics.terahex.geo._
 
 package object terahex {
 
@@ -21,12 +21,24 @@ package object terahex {
     def toWellKnownText: String = {
       val points = z.geometry
       (points :+ points.head)
-        .map(loc => s"${loc.lon.lon} ${loc.lat.lat}")
+        .map(loc => f"${loc.lon.lon}%f ${loc.lat.lat}%f")
         .mkString("POLYGON ((", ", ", "))")
     }
 
     def code[Code](implicit encoding: Encoding[Code]): Code = encoding.encode(z)
 
-    def geometry: Seq[LatLon] = ???
+    def outerRadius = z.size / (2 * math.sin(60d.toRadians))
+
+    def geometry: Seq[LatLon] = {
+
+      val center = z.location
+      val east = Vector(outerRadius, 0)
+      Iterator.iterate(east)(rotate(Degrees(60)))
+        .take(6)
+        .map(_ + center)
+        .map(_.toLatLon)
+        .toSeq
+    }
   }
+
 }

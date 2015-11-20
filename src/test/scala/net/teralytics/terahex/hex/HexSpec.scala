@@ -26,4 +26,11 @@ class HexSpec extends FlatSpec with PropertyChecks with Matchers {
   it should "preserve zero LatLon" in {
     LatLon().toHex should be(Coordinate())
   }
+
+  "Every coordinate" should "be represented as a valid LatLon" in forAll(coordinates) { coord =>
+
+    val loc = coord.toLatLon
+    loc.lon.lon should (be > -180d and be <= 180d)
+    loc.lat.lat should (be > -90d and be <= 90d)
+  }
 }

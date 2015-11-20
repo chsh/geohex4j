@@ -17,4 +17,13 @@ class GridSpec extends FlatSpec with PropertyChecks with Matchers {
       val cells = grid.discrete(ll.toHex, lev)
       cells.foreach(validSubCells should contain(_))
   }
+
+  it should "be reversible up to a certain precision" in forAll(coordinates, levels) {
+    (coord, level) =>
+
+      val grid = bigEnoughGrid(coord)
+      val cells = grid.discrete(coord, 2)
+      val result = grid.continuous(cells)
+      result.v.x2 should be (coord.v.x2 +- (grid.size(level) / 2))
+  }
 }

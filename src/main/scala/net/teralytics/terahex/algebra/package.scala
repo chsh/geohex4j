@@ -35,4 +35,31 @@ package object algebra {
       x2 + x1 * math.sin(a)
     )
   }
+
+  def rotate(alpha: Degrees): Transform = { v =>
+
+    val a = alpha.d.toRadians
+    val Vector(x1, x2) = v
+    Vector(
+      x1 * math.cos(a) - x2 * math.sin(a),
+      x1 * math.sin(a) + x2 * math.cos(a))
+  }
+
+  /**
+    * Wrap `value` in a `range`.
+    * @param range (min, max] range of values.
+    */
+  def wrap(value: Double, range: (Double, Double)): Double = {
+    val (min, max) = range
+    val d = max - min
+    val norm =
+      if (value < min)
+        max - (min - value) % d
+      else
+        (value - min) % d + min
+    val res = if (norm == min) max else norm
+    assert(res > min, s"$res should be > $min")
+    assert(res <= max, s"$res should be <= $max")
+    res
+  }
 }
