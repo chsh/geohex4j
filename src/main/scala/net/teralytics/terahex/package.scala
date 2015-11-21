@@ -1,20 +1,13 @@
 package net.teralytics
 
-import net.teralytics.terahex.algebra._
-import net.teralytics.terahex.hex._
-import net.teralytics.terahex.geo._
+import scala.language.implicitConversions
+
 
 package object terahex {
 
-  implicit class CoordinateOps(val coord: Coordinate) {
+  implicit def latLonIsPoint(loc: LatLon): Point = Point(x = loc.lon.lon, y = loc.lat.lat)
 
-    def round: Cell = Cell(Col(coord.v.x1.round), Row(coord.v.x2.round))
-  }
-
-  implicit class CellOps(val c: Cell) extends AnyVal {
-
-    def toCoordinate: Coordinate = Coordinate(Vector(c.col.col.toDouble, c.row.row.toDouble))
-  }
+  implicit def pointIsLatLon(p: Point): LatLon = LatLon(Lon(p.x), Lat(p.y)).normalized
 
   implicit class ZoneOps(val z: Zone) extends AnyVal {
 
@@ -27,16 +20,14 @@ package object terahex {
 
     def code[Code](implicit encoding: Encoding[Code]): Code = encoding.encode(z)
 
-    def outerRadius = z.size / (2 * math.sin(60d.toRadians))
-
     def geometry: Seq[LatLon] = {
 
-      val center = z.location
-      val east = Vector(outerRadius, 0)
-      Iterator.iterate(east)(rotate(Degrees(60)))
+      val center: Point = z.location
+      val east = Point(z.size, 0d)
+      Iterator.iterate(east)(_.rotate(60d.toRadians))
         .take(6)
         .map(_ + center)
-        .map(_.toLatLon)
+        .map(pointIsLatLon)
         .toSeq
     }
   }

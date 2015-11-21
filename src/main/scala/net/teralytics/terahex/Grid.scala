@@ -1,9 +1,7 @@
 package net.teralytics.terahex
 
-import net.teralytics.terahex.algebra._
-import net.teralytics.terahex.hex._
-
 import scala.annotation.tailrec
+
 
 case class Grid(rootSize: Double) {
 
@@ -11,28 +9,23 @@ case class Grid(rootSize: Double) {
 
   def size(level: Int = 0) = rootSize * nestingFactor(level)
 
-  def continuous(xs: Seq[Cell]): Coordinate = {
+  def continuous(xs: Seq[Cell]): Hex = xs.zipWithIndex
+    .map { case (cell, level) => cell.toHex(size(level)) }
+    .foldLeft(Hex())(_ + _)
 
-    val x = xs.zipWithIndex
-      .map { case (cell, level) => cell.toCoordinate.scale(size(level)) }
-      .foldLeft(Vector())(_ + _)
-
-    Coordinate(x)
-  }
-
-  def discrete(x: Coordinate, iterations: Int): Seq[Cell] = {
+  def discrete(x: Hex, levels: Int): Seq[Cell] = {
 
     @tailrec
-    def loop(iteration: Int, zero: Coordinate, result: List[Cell]): List[Cell] =
+    def loop(level: Int, zero: Hex, result: List[Cell]): List[Cell] =
 
-      if (iteration >= iterations) Outliers.restructure(result)
+      if (level > levels) Outliers.restructure(result)
       else {
         val diff = x - zero
-        val cell = Coordinate(diff.scale(1.0 / size(iteration))).round
-        val zeroDelta = cell.toCoordinate.scale(size(iteration))
-        loop(iteration + 1, Coordinate(zero + zeroDelta), cell :: result)
+        val cell = diff.toCell(size(level))
+        val zeroDelta = cell.toHex(size(level))
+        loop(level + 1, zero + zeroDelta, cell :: result)
       }
 
-    loop(0, Coordinate(), List())
+    loop(1, Hex(), List())
   }
 }

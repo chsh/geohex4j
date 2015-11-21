@@ -2,6 +2,7 @@ package net.teralytics.terahex
 
 import scala.annotation.tailrec
 
+
 object Outliers {
 
   @tailrec
@@ -18,17 +19,19 @@ object Outliers {
     case Cell.outlierSE => (Cell.subW, top.moveSE)
     case Cell.outlierNW => (Cell.subE, top.moveNW)
     case Cell.outlierSW => (Cell.subE, top.moveSW)
+
     // TODO: figure out how to get rid of those edge cases:
-    case Cell(Col(0), Row(2)) => (Cell.subS, top.moveN)
-    case Cell(Col(0), Row(-2)) => (Cell.subN, top.moveS)
-    case Cell(Col(2), Row(0)) => (Cell.subSW, top.moveNE)
-    case Cell(Col(2), Row(-2)) => (Cell.subNW, top.moveSE)
-    case Cell(Col(-2), Row(0)) => (Cell.subNE, top.moveSW)
-    case Cell(Col(-2), Row(2)) => (Cell.subSE, top.moveNW)
-    case Cell(Col(-2), Row(-1)) => (Cell.subSE, top.moveSW)
-    case Cell(Col(2), Row(1)) => (Cell.subNW, top.moveNW)
-    case Cell(Col(2), Row(-3)) => (Cell.subSW, top.moveSE)
-    case Cell(Col(-2), Row(3)) => (Cell.subNE, top.moveNW)
+    case Cell(-2, -1) => (Cell.subNE, top.moveNW)
+    case Cell(-2, 0) => (Cell.subSE, top.moveNW)
+    case Cell(-2, 2) => (Cell.subNE, top.moveSW)
+    case Cell(-2, 3) => (Cell.subSE, top.moveSW)
+    case Cell(0, -2) => (Cell.subS, top.moveN)
+    case Cell(0, 2) => (Cell.subN, top.moveS)
+    case Cell(2, -3) => (Cell.subNW, top.moveNE)
+    case Cell(2, -2) => (Cell.subSW, top.moveNE)
+    case Cell(2, 0) => (Cell.subNW, top.moveSE)
+    case Cell(2, 1) => (Cell.subSW, top.moveSE)
+
     case _ => (sub, top)
   }
 }

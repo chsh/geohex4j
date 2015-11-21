@@ -1,5 +1,6 @@
 package net.teralytics.terahex
 
+
 trait Encoding[Code] {
 
   def encode(zone: Zone): Code

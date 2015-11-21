@@ -1,17 +1,15 @@
 package net.teralytics.terahex
 
-import net.teralytics.terahex.geo._
-import net.teralytics.terahex.hex._
 
 case class Zone(rootSize: Double, cells: Seq[Cell]) {
 
   private[this] val grid = Grid(rootSize)
 
-  lazy val location: LatLon = grid.continuous(cells).toLatLon
+  val level: Int = cells.length
 
-  lazy val level: Int = cells.length
+  val size: Double = grid.size(level)
 
-  lazy val size: Double = grid.size(level)
+  lazy val location: LatLon = grid.continuous(cells).toPoint
 }
 
 object Zone {
@@ -21,7 +19,5 @@ object Zone {
     Zone(grid.rootSize, cells)
   }
 
-  def apply[Code](code: Code)(implicit encoding: Encoding[Code]): Zone = {
-    encoding.decode(code)
-  }
+  def apply[Code](code: Code)(implicit encoding: Encoding[Code]): Zone = encoding.decode(code)
 }

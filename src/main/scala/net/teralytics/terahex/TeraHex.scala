@@ -1,6 +1,5 @@
 package net.teralytics.terahex
 
-import net.teralytics.terahex.geo._
 
 object TeraHex {
 

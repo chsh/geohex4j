@@ -1,7 +1,5 @@
 package net.teralytics.terahex
 
-import net.teralytics.terahex.algebra._
-import net.teralytics.terahex.geo._
 import net.teralytics.terahex.hex._
 import org.scalacheck.Gen._
 
@@ -9,18 +7,26 @@ import scala.math._
 
 object Generators {
 
-  val vectors = for {
+  val points = for {
+    x <- chooseNum(-1000d, 1000d)
+    y <- chooseNum(-1000d, 1000d)
+  } yield Point(x, y)
+
+  val hexCoordinates = for {
     x1 <- chooseNum(-1000d, 1000d)
     x2 <- chooseNum(-1000d, 1000d)
-  } yield Vector(x1, x2)
+  } yield Hex(x1, x2)
 
-  val coordinates = vectors.map(Coordinate)
+  def coordinatesWithin(size: Double) = for {
+    x1 <- chooseNum(-size / 2, size / 2)
+    x2 <- chooseNum(-size / 2, size / 2)
+  } yield Hex(x1, x2)
 
-  def bigEnoughGrid(x: Coordinate) = Grid(max(max(abs(x.v.x1), abs(x.v.x2)), 1d) * 3)
+  def bigEnoughGrid(x: Hex) = Grid(max(max(abs(x.col), abs(x.row)), 1d) * 3)
 
   val latlons = for {
-    lon <- chooseNum(-179.999999, 180d, 0d)
-    lat <- chooseNum(-89.999999, 90d, 0d)
+    lon <- chooseNum(-180 + 1e-12, 180d, 0d)
+    lat <- chooseNum(-90 + 1e-12, 90d, 0d)
   } yield LatLon(Lon(lon), Lat(lat))
 
   val allLevels = 0 to 15
