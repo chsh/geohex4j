@@ -18,8 +18,8 @@ object Generators {
   } yield Hex(x1, x2)
 
   def coordinatesWithin(size: Double) = for {
-    x1 <- chooseNum(-size / 2, size / 2)
-    x2 <- chooseNum(-size / 2, size / 2)
+    x1 <- chooseNum(-size / 6, size / 6)
+    x2 <- chooseNum(-size / 6, size / 6)
   } yield Hex(x1, x2)
 
   def bigEnoughGrid(x: Hex) = Grid(max(max(abs(x.col), abs(x.row)), 1d) * 3)
