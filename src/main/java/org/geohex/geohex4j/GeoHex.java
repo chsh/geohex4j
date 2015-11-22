@@ -10,17 +10,13 @@ import java.util.regex.Pattern;
  */
 public class GeoHex {
     public static final String VERSION = "3.20";
-
-    // *** Share with all instances ***
     public static final String h_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     public static final double h_base = 20037508.34;
     public static final double h_deg = Math.PI * (30.0 / 180.0);
     public static final double h_k = Math.tan(h_deg);
 
-    // *** Share with all instances ***
-    private static double calcHexSize(int level) {
-        return h_base / Math.pow(3.0, level + 3);
-    }
+    private static final Pattern INC15 = Pattern.compile("[15]");
+    private static final Pattern EXC125 = Pattern.compile("[^125]");
 
     public static final class Zone {
         public final double lat;
@@ -324,7 +320,6 @@ public class GeoHex {
         return getZoneByCode(code);
     }
 
-
     private static XY loc2xy(double lon, double lat) {
         double x = lon * h_base / 180.0;
         double y = Math.log(Math.tan((90.0 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
@@ -339,8 +334,9 @@ public class GeoHex {
         return new Loc(lat, lon);
     }
 
-    private static final Pattern INC15 = Pattern.compile("[15]");
-    private static final Pattern EXC125 = Pattern.compile("[^125]");
+    private static double calcHexSize(int level) {
+        return h_base / Math.pow(3.0, level + 3);
+    }
 
     private static final boolean regMatch(CharSequence cs, Pattern pat) {
         return pat.matcher(cs).matches();
