@@ -1,5 +1,6 @@
 package net.teralytics.terahex
 
+import scala.math._
 
 case class Lat(lat: Double = 0) extends AnyVal
 
@@ -7,9 +8,20 @@ case class Lon(lon: Double = 0) extends AnyVal
 
 case class LatLon(lon: Lon = Lon(), lat: Lat = Lat()) {
 
-  def normalized = LatLon(
-    Lon(wraparound(lon.lon, (-180, 180))),
-    Lat(wraparound(lat.lat, (-90, 90))))
+  private val lonRange = (-180d, 180d)
+  private val latRange = (-90d, 90d)
+
+  def normalized = {
+    LatLon(
+      Lon(wraparound(lon.lon, lonRange)),
+      Lat(wraparound(lat.lat, latRange)))
+  }
+
+  def distance(other: LatLon): Double = {
+    val a = wraparound(other.lon.lon - lon.lon, lonRange)
+    val b = wraparound(other.lat.lat - lat.lat, latRange)
+    sqrt(a * a + b * b)
+  }
 
   /**
     * Wrap `value` in a `range`.

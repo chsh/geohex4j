@@ -9,7 +9,7 @@ case class Grid(rootSize: Double) {
 
   def size(level: Int = 0) = rootSize * nestingFactor(level)
 
-  def continuous(xs: Seq[Cell]): Hex = xs.zipWithIndex
+  def continuous(xs: Seq[Cell]): Hex = (Cell() +: xs).zipWithIndex
     .map { case (cell, level) => cell.toHex(size(level)) }
     .foldLeft(Hex())(_ + _)
 

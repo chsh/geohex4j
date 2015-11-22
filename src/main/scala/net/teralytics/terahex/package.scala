@@ -1,13 +1,14 @@
 package net.teralytics
 
 import scala.language.implicitConversions
+import scala.math._
 
 
 package object terahex {
 
-  implicit def latLonIsPoint(loc: LatLon): Point = Point(x = loc.lon.lon, y = loc.lat.lat)
+  implicit def latLonIsPoint(loc: LatLon): Point = Point(x = loc.lon.lon, y = -loc.lat.lat)
 
-  implicit def pointIsLatLon(p: Point): LatLon = LatLon(Lon(p.x), Lat(p.y)).normalized
+  implicit def pointIsLatLon(p: Point): LatLon = LatLon(Lon(p.x), Lat(-p.y)).normalized
 
   implicit class ZoneOps(val z: Zone) extends AnyVal {
 
@@ -30,6 +31,8 @@ package object terahex {
         .map(pointIsLatLon)
         .toSeq
     }
+
+    def innerRadius: Double = z.size * cos(30d.toRadians)
   }
 
 }
