@@ -1,8 +1,6 @@
 package org.geohex.geohex4j;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +10,7 @@ import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 public class GeoHexTest {
-    private double LOCATION_PRECISION = 0.0000000000010;
+    private double LOCATION_PRECISION = 0.0000000000001;
 
     @Test
     public void invalidArguments() {
@@ -49,14 +47,80 @@ public class GeoHexTest {
     }
 
     @Test
-    public void convertCoordinatesToGeoHex() throws IOException {
-        String c = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
-        assertEquals("XM566370240", c);
+    public void getZoneByLocation() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getZoneByLocation_v3.2.csv")) {
+            double lat = Double.parseDouble(v[0]);
+            double lon = Double.parseDouble(v[1]);
+            int level = Integer.parseInt(v[2]);
+            String code = v[3];
+            GeoHex.Zone zone = GeoHex.getZoneByLocation(lat, lon, level);
+            assertEquals(code, zone.code);
+        }
+    }
 
-        GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-        assertEquals("XM566370240", zone.code);
+    @Test
+    public void getXYByLocation() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getXYByLocation_v3.2.csv")) {
+            double lat = Double.parseDouble(v[0]);
+            double lon = Double.parseDouble(v[1]);
+            int level = Integer.parseInt(v[2]);
+            double x = Double.parseDouble(v[3]);
+            double y = Double.parseDouble(v[4]);
+            GeoHex.XY xy = GeoHex.getXYByLocation(lat, lon, level);
+            assertEquals(x, xy.x, LOCATION_PRECISION);
+            assertEquals(y, xy.y, LOCATION_PRECISION);
+        }
+    }
 
-        for (String[] v : parseCsv("test-files/testdata_ll2hex.txt")) {
+    @Test
+    public void getZoneByCode() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getZoneByCode_v3.2.csv")) {
+            double lat = Double.parseDouble(v[0]);
+            double lon = Double.parseDouble(v[1]);
+            int level = Integer.parseInt(v[2]);
+            String code = v[3];
+            GeoHex.Zone zone = GeoHex.getZoneByCode(code);
+            assertEquals(zone.code, code);
+            assertLatitude(zone.lat, lat);
+            assertLongitude(zone.lon, lon);
+            assertEquals(zone.getLevel(), level);
+        }
+    }
+
+    @Test
+    public void getZoneByXY() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getZoneByXY_v3.2.csv")) {
+            double x = Double.parseDouble(v[0]);
+            double y = Double.parseDouble(v[1]);
+            double lat = Double.parseDouble(v[2]);
+            double lon = Double.parseDouble(v[3]);
+            int level = Integer.parseInt(v[4]);
+            String code = v[5];
+            GeoHex.Zone zone = GeoHex.getZoneByXY(x, y, level);
+            assertLatitude(lat, zone.lat);
+            assertLongitude(lon, zone.lon);
+            assertEquals(level, zone.getLevel());
+            assertEquals(code, zone.code);
+        }
+    }
+
+    @Test
+    public void adjustXY() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_adjustXY_v3.2.csv")) {
+            double x = Double.parseDouble(v[0]);
+            double y = Double.parseDouble(v[1]);
+            int level = Integer.parseInt(v[2]);
+            double ex = Double.parseDouble(v[3]);
+            double ey = Double.parseDouble(v[4]);
+            GeoHex.XY resultXY = GeoHex.adjustXY(x, y, level);
+            assertEquals(ex, resultXY.x, 0);
+            assertEquals(ey, resultXY.y, 0);
+        }
+    }
+
+    @Test
+    public void encode() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getZoneByLocation_v3.2.csv")) {
             double lat = Double.parseDouble(v[0]);
             double lon = Double.parseDouble(v[1]);
             int level = Integer.parseInt(v[2]);
@@ -67,40 +131,22 @@ public class GeoHexTest {
     }
 
     @Test
-    public void convertGeoHexToCoordinates() throws IOException {
-        GeoHex.Zone zone1 = GeoHex.decode("XM566370240");
-        assertLatitude(35.78044332128244, zone1.lat);
-        assertLongitude(139.57018747142206, zone1.lon);
-        assertEquals(9, zone1.level);
-
-        GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
-        assertLatitude(35.78044332128244, zone2.lat);
-        assertLongitude(139.57018747142206, zone2.lon);
-        assertEquals(9, zone2.level);
-
-        for (String[] v : parseCsv("test-files/testdata_hex2ll.txt")) {
+    public void decode() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getZoneByCode_v3.2.csv")) {
+            double lat = Double.parseDouble(v[0]);
+            double lon = Double.parseDouble(v[1]);
+            int level = Integer.parseInt(v[2]);
             String code = v[3];
             GeoHex.Zone zone = GeoHex.decode(code);
-            assertLatitude(Double.parseDouble(v[0]), zone.lat);
-            assertLongitude(Double.parseDouble(v[1]), zone.lon);
-            assertEquals(Integer.parseInt(v[2]), zone.level);
+            assertLatitude(lat, zone.lat);
+            assertLongitude(lon, zone.lon);
+            assertEquals(level, zone.getLevel());
         }
     }
 
     @Test
-    public void convertCoordinatesToGeoHexPolygon() throws IOException {
-        GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-        double[][] polygon = {
-                {35.78044332128244, 139.56951006790973},
-                {35.78091924645671, 139.5698487696659},
-                {35.78091924645671, 139.57052617317822},
-                {35.78044332128244, 139.5708648749344},
-                {35.779967393259035, 139.57052617317822},
-                {35.779967393259035, 139.5698487696659}
-        };
-        assertPolygon(polygon, zone.getHexCoords());
-
-        for (String[] v : parseCsv("test-files/testdata_ll2polygon.txt")) {
+    public void getHexCoords() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getHexCoords_v3.2.csv")) {
             double lat = Double.parseDouble(v[0]);
             double lon = Double.parseDouble(v[1]);
             int level = Integer.parseInt(v[2]);
@@ -118,11 +164,8 @@ public class GeoHexTest {
     }
 
     @Test
-    public void convertCoordinatesToGeoHexSize() throws IOException {
-        GeoHex.Zone zone = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-        assertLatitude(37.70410702222824, zone.getHexSize());
-
-        for (String[] v : parseCsv("test-files/testdata_ll2hexsize.txt")) {
+    public void getHexSize() throws IOException {
+        for (String[] v : parseCsv("test-files/testdata_getHexSize_v3.2.csv")) {
             double lat = Double.parseDouble(v[0]);
             double lon = Double.parseDouble(v[1]);
             int level = Integer.parseInt(v[2]);
@@ -135,11 +178,8 @@ public class GeoHexTest {
     private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
         for (int i = 0; i < expected_polygon.length; i++) {
             double[] latlon = expected_polygon[i];
-            double d;
-            d = latlon[0] - polygon[i].lat;
-            assertEquals(0, (long) d * 1000000000000L);
-            d = latlon[1] - polygon[i].lon;
-            assertEquals(0, (long) d * 1000000000000L);
+            assertLatitude(latlon[0], polygon[i].lat);
+            assertLongitude(latlon[1], polygon[i].lon);
         }
     }
 
