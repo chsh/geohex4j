@@ -10,7 +10,7 @@ object TeraHex {
     */
   lazy val minGeoRootSize = 90d * (4d * math.cos(30d.toRadians) + math.pow(math.cos(30d.toRadians), 2))
 
-  implicit val grid = Grid(minGeoRootSize)
+  implicit val grid: Grid = Grid(minGeoRootSize)
 
   def zoneByLocation(loc: LatLon, level: Int): Zone = Zone(loc, level)
 

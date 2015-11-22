@@ -23,7 +23,7 @@ class ZoneSpec extends FlatSpec with PropertyChecks with Matchers {
     val loc = LatLon(Lon(cellSize + 10), Lat(2))
 
     val zone = Zone(loc, 1)
-    zone.size should be (cellSize)
+    zone.size should be(cellSize)
     zone.cells should contain theSameElementsInOrderAs List(Cell.subNE)
 
     val loc2 = zone.location
@@ -45,5 +45,13 @@ class ZoneSpec extends FlatSpec with PropertyChecks with Matchers {
       val zoneLocation = Zone(loc, lev)(grid).location
       zoneLocation.lon.lon should (be > -180d and be <= 180d)
       zoneLocation.lat.lat should (be > -90d and be <= 90d)
+  }
+
+  "Numeric zone encoding" should "produce Long numbers for geo locations up to 15 level" in forAll(latlons, levels) {
+    (loc, lev) =>
+
+      implicit val encoding = Encoding.numeric
+      val code = Zone(loc, lev)(TeraHex.grid).code
+      code.isValidLong should be(true)
   }
 }
