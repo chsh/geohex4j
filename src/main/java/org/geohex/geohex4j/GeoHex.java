@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /*
- * GeoHex by @sa2da (http://geogames.net) is licensed under Creative Commons BY-SA 2.1 Japan License.
- * GeoHex V3 for Java implemented by @chshii is licensed under Creative Commons BY-SA 2.1 Japan License.
+ * GeoHex by @sa2da (http://geogames.net) is licensed under MIT license.
+ * GeoHex V3 for Java implemented by @chshii is licensed under MIT license.
  */
 public class GeoHex {
     public static final String VERSION = "3.20";
