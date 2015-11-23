@@ -16,21 +16,6 @@ class ZoneSpec extends FlatSpec with PropertyChecks with Matchers {
       zone.code.toString should have length (lev + 4)
   }
 
-  it should "represent an example location as expected" in {
-
-    val cellSize = 100d
-    implicit val grid = Grid(cellSize * 3)
-    val loc = LatLon(Lon(cellSize + 10), Lat(2))
-
-    val zone = Zone(loc, 1)
-    zone.size should be(cellSize)
-    zone.cells should contain theSameElementsInOrderAs List(Cell.subNE)
-
-    val loc2 = zone.location
-    loc2.lon.lon should be(cellSize * 1.5)
-    loc2.lat.lat should be(cellSize * cos(30d.toRadians) +- 1e-10)
-  }
-
   it should "roundtrip locations up to the zone size" in forAll(geoGrids, latlons, levels) {
     (grid, loc, lev) =>
 

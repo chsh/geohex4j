@@ -26,6 +26,10 @@ case class LatLon(lon: Lon = Lon(), lat: Lat = Lat()) {
     sqrt(a * a + b * b)
   }
 
+  def toPoint: Point = Point(x = lon.lon, y = -mercatorLat)
+
+  private[this] def mercatorLat: Double = log(tan(Pi/4 + lat.lat.toRadians/2)).toDegrees
+
   /**
     * Wrap `value` in a `range`.
     * @param range (min, max] range of values.
@@ -43,4 +47,11 @@ case class LatLon(lon: Lon = Lon(), lat: Lat = Lat()) {
     assert(res <= max, s"$res should be <= $max")
     res
   }
+}
+
+object LatLon {
+
+  def apply(p: Point): LatLon = LatLon(Lon(p.x), Lat(inverseMercatorLat(-p.y))).normalized
+
+  private[this] def inverseMercatorLat(lat: Double): Double = atan(sinh(lat.toRadians)).toDegrees
 }

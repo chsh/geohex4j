@@ -24,9 +24,11 @@ object Generators {
 
   def bigEnoughGrid(x: Hex) = Grid(max(max(abs(x.col), abs(x.row)), 1d) * 3)
 
+  val latsDefinedForMercator = chooseNum(-85d, 85d, 0d)
+
   val latlons = for {
     lon <- chooseNum(-180 + 1e-12, 180d, 0d)
-    lat <- chooseNum(-90 + 1e-12, 90d, 0d)
+    lat <- latsDefinedForMercator
   } yield LatLon(Lon(lon), Lat(lat))
 
   val allLevels = 0 to 15
