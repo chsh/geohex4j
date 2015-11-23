@@ -10,6 +10,10 @@ trait Encoding[Code] {
 
 object Encoding {
 
+  /**
+    * Encoding of zones into a decimal number 1[RRR][SSSS...] always prefixed with 1 to ensure fixed digit length,
+    * followed by three digits R representing the `Zone.rootSize`, followed by one digit S for each sub cell.
+    */
   lazy val numeric = new Encoding[BigInt] {
 
     val dictionary = IndexedSeq(
@@ -25,21 +29,22 @@ object Encoding {
 
     val reverseDictionary = dictionary.zipWithIndex.toMap
 
-    private[this] def root(z: Zone): BigInt = {
+    private[this] def encodeRoot(z: Zone): BigInt = {
       val s = z.rootSize.round
       assert(s <= 999 && s > 0, s"Root size must be in (0, 999]")
       1000 + s
     }
 
-    private[this] def rootSize(code: Int): Double = code - 1000
+    private[this] def decodeRoot(code: Int): Zone = Zone(code - 1000, Seq())
 
     override def encode(zone: Zone): BigInt =
       zone.cells
-        .foldLeft(root(zone))((acc, cell) => acc * 10 + reverseDictionary(cell))
+        .foldLeft(encodeRoot(zone))((code, cell) => code * 10 + reverseDictionary(cell))
 
     override def decode(code: BigInt): Zone = {
       val (root, subs) = code.toString.splitAt(4)
-      Zone(rootSize(root.toInt), subs.map(ch => dictionary(ch.asDigit)))
+      val cells = subs.map(ch => dictionary(ch.asDigit))
+      decodeRoot(root.toInt).copy(cells = cells)
     }
   }
 }

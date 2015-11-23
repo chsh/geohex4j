@@ -8,6 +8,9 @@ import scala.math._
   *
   */
 
+/**
+  * Coordinates in a 2D orthogonal coordinate system X,Y, where X axis is pointing rightwards and Y downwards.
+  */
 case class Point(x: Double, y: Double) {
 
   def rotate(aRadians: Double): Point = Point(
@@ -23,6 +26,9 @@ case class Point(x: Double, y: Double) {
     row = (-x + sqrt(3) * y) / 3)
 }
 
+/**
+  * Cube coordinates projected on a 2D plane. Only used by Hex coordinates for easier rounding.
+  */
 case class Cube(x: Double, y: Double, z: Double) {
 
   def round = {
@@ -43,6 +49,9 @@ case class Cube(x: Double, y: Double, z: Double) {
   def toHex: Hex = Hex(col = x, row = z)
 }
 
+/**
+  * Fractional coordinates in the hexagonal axial system with columns and rows.
+  */
 case class Hex(col: Double = 0, row: Double = 0) {
 
   def scale(k: Double): Hex = Hex(col = k * col, row = k * row)
@@ -65,6 +74,9 @@ case class Hex(col: Double = 0, row: Double = 0) {
   def toCell(size: Double): Cell = scale(1d / size).round
 }
 
+/**
+  * Discrete cell coordinate in a hexagonal grid.
+  */
 case class Cell(col: Long = 0, row: Long = 0) {
 
   def toHex(size: Double): Hex = Hex(col = col, row = row).scale(size)

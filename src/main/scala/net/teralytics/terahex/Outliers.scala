@@ -5,6 +5,10 @@ import scala.annotation.tailrec
 
 object Outliers {
 
+  /**
+    * Restructure outliers in a reversed (from smallest to biggest) list of cells pairwise. The result is ordered
+    * from biggest to smallest cells.
+    */
   @tailrec
   def restructure(reversedCells: List[Cell], result: List[Cell] = List()): List[Cell] = reversedCells match {
     case Nil => result
@@ -14,6 +18,25 @@ object Outliers {
       restructure(top2 :: tail, sub2 :: result)
   }
 
+  /**
+    * |            _ _ _ _ _
+    * |           /X /   \X \
+    * |          /_ / N   \ _\
+    * |         /   \     /   \
+    * |     _ _/ NW  \_ _/ NE  \_ _
+    * |    /  /\     /   \     /\  \
+    * |   /  /W \_ _/ C   \_ _/E \  \
+    * |   \  \  /   \     /   \  /  /
+    * |    \_ \/ SW  \_ _/ SE  \/_ /
+    * |        \     /   \     /
+    * |         \_ _/ S   \_ _/
+    * |          \X \     /X /
+    * |           \_ \_ _/_ /
+    *
+    * Restructure parent-child relationships of outlier sub areas (marked X) so that they become E/W in the neighbored
+    * top hexagons to assure nesting consistency.
+    *
+    */
   def restructure(sub: Cell, top: Cell): (Cell, Cell) = sub match {
     case Cell.outlierNE => (Cell.subW, top.moveNE)
     case Cell.outlierSE => (Cell.subW, top.moveSE)

@@ -6,6 +6,9 @@ case class Lat(lat: Double = 0) extends AnyVal
 
 case class Lon(lon: Double = 0) extends AnyVal
 
+/**
+  * Geographic coordinates.
+  */
 case class LatLon(lon: Lon = Lon(), lat: Lat = Lat()) {
 
   private val lonRange = (-180d, 180d)

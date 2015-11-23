@@ -9,13 +9,13 @@ class GridSpec extends FlatSpec with PropertyChecks with Matchers {
 
   "Grid" should "produce no cells at level 0" in forAll(grids, hexCoordinates) {
     (grid, hex) =>
-      grid.discrete(hex, 0) should have length 0
+      grid.tessellate(hex, 0) should have length 0
   }
 
   it should "produce only valid sub cells" in
     forAll(grids, levels) { (grid, lev) =>
       forAll(coordinatesWithin(grid.rootSize)) { hex =>
-        val cells = grid.discrete(hex, lev)
+        val cells = grid.tessellate(hex, lev)
         cells.foreach(validSubCells should contain(_))
       }
     }
@@ -25,8 +25,8 @@ class GridSpec extends FlatSpec with PropertyChecks with Matchers {
       forAll(coordinatesWithin(grid.rootSize)) { hex =>
 
         val grid = bigEnoughGrid(hex)
-        val cells = grid.discrete(hex, level)
-        val result = grid.continuous(cells)
+        val cells = grid.tessellate(hex, level)
+        val result = grid.inverse(cells)
         result.row should be(hex.row +- (grid.size(level) + 1e-10))
       }
     }

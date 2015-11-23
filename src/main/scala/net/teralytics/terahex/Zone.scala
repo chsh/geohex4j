@@ -1,21 +1,30 @@
 package net.teralytics.terahex
 
-
+/**
+  * Zone represents a geographic area of a hexagonal geometry. Zone is specified by the size of the root hexagon and
+  * a series of tessellation steps for that root hexagon.
+  */
 case class Zone(rootSize: Double, cells: Seq[Cell]) {
 
   private[this] val grid = Grid(rootSize)
 
   val level: Int = cells.length
 
+  /**
+    * Size of the side of the hexagon, the same as the hexagon outer radius
+    */
   val size: Double = grid.size(level)
 
-  lazy val location: LatLon = grid.continuous(cells).toPoint
+  /**
+    * Geographic location of the hexagon centroid
+    */
+  lazy val location: LatLon = grid.inverse(cells).toPoint
 }
 
 object Zone {
 
   def apply(location: LatLon, level: Int)(implicit grid: Grid): Zone = {
-    val cells = grid.discrete(location.toHex, level)
+    val cells = grid.tessellate(location.toHex, level)
     Zone(grid.rootSize, cells)
   }
 
