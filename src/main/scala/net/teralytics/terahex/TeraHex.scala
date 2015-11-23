@@ -5,12 +5,7 @@ object TeraHex {
 
   implicit val encoding = Encoding.numeric
 
-  /**
-    * Minimal hexagon height to circumscribe a 360x180 rectangle
-    */
-  lazy val minGeoRootSize = 90d * (4d * math.cos(30d.toRadians) + math.pow(math.cos(30d.toRadians), 2))
-
-  implicit val grid: Grid = Grid(minGeoRootSize)
+  implicit val grid: Grid = Grid(300)
 
   def zoneByLocation(loc: LatLon, level: Int): Zone = Zone(loc, level)
 

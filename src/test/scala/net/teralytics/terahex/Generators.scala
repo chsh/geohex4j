@@ -46,7 +46,7 @@ object Generators {
 
   val grids = rootSizes.map(Grid(_))
 
-  val geoGrids = rootSizes.suchThat(_ > TeraHex.minGeoRootSize).map(Grid(_))
+  val geoGrids = chooseNum(360, 999).map(Grid(_))
 
   val rootZones = rootSizes.map(Zone(_, List()))
 

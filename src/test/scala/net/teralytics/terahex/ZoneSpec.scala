@@ -32,8 +32,8 @@ class ZoneSpec extends FlatSpec with PropertyChecks with Matchers {
       zoneLocation.lat.lat should (be > -90d and be <= 90d)
   }
 
-  "Numeric zone encoding" should "produce Long numbers for geo locations up to 15 level" in forAll(latlons, levels) {
-    (loc, lev) =>
+  "Numeric zone encoding" should "produce Long numbers for reasonable geo locations up to 15 levels" in
+    forAll(latlons.suchThat(l => abs(l.lat.lat) < 80d), levels) { (loc, lev) =>
 
       implicit val encoding = Encoding.numeric
       val code = Zone(loc, lev)(TeraHex.grid).code
