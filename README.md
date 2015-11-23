@@ -1,77 +1,62 @@
-# geohex4j
+# GeoHex
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.geohex.geohex4j/geohex4j/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser)
+[![Build Status](https://travis-ci.org/teralytics/geohex.svg?branch=master)](https://travis-ci.org/teralytics/geohex)
+[![Download](https://api.bintray.com/packages/teralytics/maven/geohex/images/download.svg)](https://bintray.com/teralytics/maven/geohex/_latestVersion)
 
-GeoHex for Java
+[GeoHex](http://www.geohex.org) implementation in Scala. Forked from [geohex4j](https://github.com/chsh/geohex4j).
 
-# DESCRIPTION
+# TeraHex
 
-GeoHex V3 for Java implemented by CHIKURA Shinsaku.
+TeraHex is a geo-hashing scheme inspired by GeoHex with flexible grid sizes and encoders.
 
-- http://www.simplegimmick.com/
-- http://twitter.com/chshii
+# Usage
 
-# GeoHex class
+Add dependency to `build.sbt`:
 
-GeoHex class can convert between latitude/longitude and GeoHex
+    resolvers += Resolver.bintrayRepo("teralytics", "maven")
 
-V3: ported from JavaScript implementation by @sa2da.
+    libraryDependencies += "net.teralytics" %% "geohex" % "0.1.+"
 
-Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods are ready.
+Use functions of the `net.teralytics.geohex.GeoHex` object:
 
-# INSTALL
+    def encode(lat: Double, lon: Double, level: Int): String
 
-Gradle:
+    def decode(code: String): Zone
 
-```
-compile 'org.geohex.geohex4j:geohex4j:3.0.0'
-```
+    def calcHexSize(level: Int): Double
 
-or simply copy org.geohex.geohex4j.GeoHex.java into your app.
+Use functions of the `net.teralytics.terahex.TeraHex` object:
 
-# USAGE
-
-```java
-import org.geohex.geohex4j.GeoHex;
-
-String code = GeoHex.encode(35.780516755235475, 139.57031250000003, 9);
-// code -> "XM566370240"
-GeoHex.Zone zone1 = GeoHex.getZoneByLocation(35.780516755235475, 139.57031250000003, 9);
-// zone1.lat -> 35.78044332128247
-// zone1.lon -> 139.57018747142203
-// zone1.level -> 9
-// zone1.getHexSize() -> 37.70410702222824
-
-GeoHex.Zone zone2 = GeoHex.getZoneByCode("XM566370240");
-// zone2.lat -> 35.78044332128247
-// zone2.lon -> 139.57018747142203
-// zone2.level -> 9
-// zone2.getHexSize() -> 37.70410702222824
-...
-```
+    def zoneByLocation(loc: LatLon, level: Int): Zone
+    
+    def encode(loc: LatLon, level: Int): Long
+    
+    def decode(code: Long): Zone
 
 # LICENSE
 
-The MIT License (MIT), in honor of @sa2da. http://twitter.com/sa2da
-comes from http://www.geohex.org/
+The MIT License (MIT)
 
-Copyright (C) 2010 @chsh, @mattak
+Copyright (c) 2009 [sa2da](http://www.geohex.org)
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Copyright (c) 2010 [CHIKURA Shinsaku](https://github.com/chsh), [Takuma Maruyama](https://github.com/mattak)
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+Copyright (c) 2015 [Teralytics AG](https://github.com/teralytics)
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
