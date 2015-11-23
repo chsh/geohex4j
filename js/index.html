@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css">
+    <script type='text/javascript' src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script type='text/javascript' src="https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js"></script>
+    <script type="text/javascript" src="./target/scala-2.11/geohex-fastopt.js"></script>
+    <style type="text/css">
+        html, body {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+        }
+        #map {
+        height: 100%;
+        }
+    </style>
+    <script type='text/javascript'>//<![CDATA[
+window.onload=function(){
+
+    var map = L.map('map');
+    window.map = map;
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var terahex = net.teralytics.terahex.TeraHex();
+    window.terahex = terahex;
+
+    var loc = { lon: -74.0059, lat: 40.7127 }
+    var zone = terahex.zoneByLocation(loc.lon, loc.lat, 11);
+    omnivore.wkt.parse(zone.toWellKnownText).addTo(map);
+    map.setView(zone.location, 15);
+}
+
+//]]>
+
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+</html>
