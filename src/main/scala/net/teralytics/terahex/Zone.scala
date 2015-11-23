@@ -19,6 +19,25 @@ case class Zone(rootSize: Double, cells: Seq[Cell]) {
     * Geographic location of the hexagon centroid
     */
   lazy val location: LatLon = grid.inverse(cells).toPoint
+
+  /**
+    * The hexagon inner radius in decimal lat/lon degrees.
+    */
+  def innerRadius: Double = grid.innerRadius(level)
+
+  /**
+    * `LatLon` coordinates of the hexagon corners.
+    */
+  def geometry: Seq[LatLon] = {
+
+    val center: Point = location
+    val east = Point(size, 0d)
+    Iterator.iterate(east)(_.rotate(60d.toRadians))
+      .take(6)
+      .map(_ + center)
+      .map(pointIsLatLon)
+      .toSeq
+  }
 }
 
 object Zone {

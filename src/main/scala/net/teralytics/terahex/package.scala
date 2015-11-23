@@ -1,8 +1,6 @@
 package net.teralytics
 
 import scala.language.implicitConversions
-import scala.math._
-
 
 package object terahex {
 
@@ -20,19 +18,6 @@ package object terahex {
     }
 
     def code[Code](implicit encoding: Encoding[Code]): Code = encoding.encode(z)
-
-    def geometry: Seq[LatLon] = {
-
-      val center: Point = z.location
-      val east = Point(z.size, 0d)
-      Iterator.iterate(east)(_.rotate(60d.toRadians))
-        .take(6)
-        .map(_ + center)
-        .map(pointIsLatLon)
-        .toSeq
-    }
-
-    def innerRadius: Double = z.size * cos(30d.toRadians)
   }
 
 }

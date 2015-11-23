@@ -1,6 +1,7 @@
 package net.teralytics.terahex
 
 import scala.annotation.tailrec
+import scala.math._
 
 /**
   * Tessellation of a hexagon area into a series of nested sub hexagons:
@@ -25,9 +26,14 @@ import scala.annotation.tailrec
 case class Grid(rootSize: Double) {
 
   /**
-    * Size of a grid cell at a given `level`.
+    * Size of a grid cell at a given `level` in decimal lat/lon degrees.
     */
   def size(level: Int = 0) = rootSize * math.pow(3, -level)
+
+  /**
+    * Inner radius of the hexagon at a givel `level` in decimal lat/lon degrees.
+    */
+  def innerRadius(level: Int = 0) = size(level) * cos(30d.toRadians)
 
   /**
     * Inverse discrete grid tessellation `steps` to reconstruct the hexagonal coordinate that the `steps` represent.
