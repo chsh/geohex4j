@@ -5,6 +5,10 @@
 
 [GeoHex](http://www.geohex.org) implementation in Scala. Forked from [geohex4j](https://github.com/chsh/geohex4j).
 
+# TeraHex
+
+TeraHex is a geo-hashing scheme inspired by GeoHex with flexible grid sizes and encoders.
+
 # Usage
 
 Add dependency to `build.sbt`:
@@ -20,6 +24,14 @@ Use functions of the `net.teralytics.geohex.GeoHex` object:
     def decode(code: String): Zone
 
     def calcHexSize(level: Int): Double
+
+Use functions of the `net.teralytics.terahex.TeraHex` object:
+
+    def zoneByLocation(loc: LatLon, level: Int): Zone
+    
+    def encode(loc: LatLon, level: Int): Long
+    
+    def decode(code: Long): Zone
 
 # LICENSE
 
