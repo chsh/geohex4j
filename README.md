@@ -33,6 +33,14 @@ Use functions of the `net.teralytics.terahex.TeraHex` object:
     
     def decode(code: Long): Zone
 
+
+# Building the JavaScript version
+ 
+Run the following:
+
+    sbt geohexJS/fullOptJS
+
+
 # LICENSE
 
 The MIT License (MIT)
