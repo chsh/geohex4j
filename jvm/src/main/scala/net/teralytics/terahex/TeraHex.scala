@@ -12,4 +12,6 @@ object TeraHex {
   def encode(loc: LatLon, level: Int): Long = Zone(loc, level).code.toLong
 
   def decode(code: Long): Zone = encoding.decode(code)
+
+  def size(level: Int): Double = grid.size(level)
 }

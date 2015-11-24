@@ -1,6 +1,8 @@
 package net.teralytics.terahex
 
-import scala.scalajs.js.annotation.{ JSName, JSExport, JSExportAll }
+import scala.scalajs.js
+import js.annotation.{ JSName, JSExport, JSExportAll }
+import js.JSConverters._
 
 @JSExport("terahex")
 @JSExportAll
@@ -10,6 +12,8 @@ object TeraHex {
   private[this] implicit val encoding: Encoding[String] = StringEncoding
 
   def encode(lon: Double, lat: Double, level: Int): String = zoneByLocation(lon, lat, level).code
+
+  def decode(code: String): ZoneJs = new ZoneJs(Zone(code))
 
   def zoneByLocation(lon: Double, lat: Double, level: Int): ZoneJs = new ZoneJs(Zone(LatLon(Lon(lon), Lat(lat)), level))
 
@@ -44,7 +48,7 @@ case class ZoneJs(z: Zone) {
 
   def innerRadius: Double = z.innerRadius
 
-  def geometry: Seq[LatLonJs] = z.geometry.map(LatLonJs.apply)
+  def geometry: js.Array[LatLonJs] = z.geometry.map(LatLonJs.apply).toJSArray
 
   def wellKnownText: String = z.toWellKnownText
 

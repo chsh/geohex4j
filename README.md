@@ -10,7 +10,8 @@
 
 TeraHex is a geo-hashing scheme inspired by GeoHex with flexible grid sizes and encoders.
 
-# Usage
+
+# Usage on JVM
 
 Add dependency to `build.sbt`:
 
@@ -29,17 +30,47 @@ Use functions of the `net.teralytics.geohex.GeoHex` object:
 Use functions of the `net.teralytics.terahex.TeraHex` object:
 
     def zoneByLocation(loc: LatLon, level: Int): Zone
-    
+
     def encode(loc: LatLon, level: Int): Long
-    
+
     def decode(code: Long): Zone
 
+    def size(level: Int): Double
 
-# Building the JavaScript version
- 
-Run the following:
 
-    sbt geohexJS/fullOptJS
+# Usage in JavaScript
+
+Install from NPM registry with:
+
+    $ npm install --save terahex
+
+Or build using SBT with:
+
+    sbt geohexJS/fastOptJS
+
+The resulting JavaScript file will be in `js/target/scala-2.11/geohex-fastopt.js`.
+
+Use the functions of the `terahex` object:
+
+    function decode(code) // Returns Zone object
+
+    function encode(lon, lat, level) // Returns string code
+
+    function zoneByLocation(lon, lat, level) // Returns Zone object
+
+    function size(level) // Returns hexagon side length in degrees at a given level
+
+The resulting `Zone` object has properties:
+
+    {
+      "level": 3,
+      "size": 12.345, // hexagon side length in degrees
+      "location": { "lon": 0.00, "lat": 0.00 },
+      "innerRadius": 11.222, // hexagon inner radius in degrees
+      "geometry": [{"lon": 0.00, "lat": 0.00}, ... ], // locations of hexagon corners
+      "wellKnownText": "POLYGON ((0.00 0.00, ...))", // hexagon geometry in WKT format
+      "code": "1300251737352" // zone code as string
+    }
 
 
 # LICENSE
