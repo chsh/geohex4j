@@ -8,3 +8,7 @@ host = api.bintray.com
 user = $BINTRAY_USER
 password = $BINTRAY_API_KEY
 EOF
+
+cat <<EOF >~/.npmrc
+//registry.npmjs.org/:_authToken=$NPMJS_AUTH_TOKEN
+EOF

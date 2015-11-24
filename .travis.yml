@@ -15,4 +15,4 @@ after_success: >
   test "${TRAVIS_PULL_REQUEST}" = 'false' &&
   test "${TRAVIS_BRANCH}" = 'master' &&
   sh "$TRAVIS_BUILD_DIR/travis_credentials.sh" &&
-  sbt +geohexJVM/publish
+  sbt +geohexJVM/publish geohexJS/npmPublish
