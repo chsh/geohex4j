@@ -42,7 +42,14 @@ window.onload=function(){
         var loc = e.latlng;
         var level = findRightLevel();
         var zone = terahex.zoneByLocation(loc.lng, loc.lat, level);
-        omnivore.wkt.parse(zone.toWellKnownText).addTo(map);
+        var hex = omnivore.wkt.parse(zone.toWellKnownText).addTo(map);
+        var text = 'Code: ' + zone.code;
+        text += '<br />Level: ' + zone.level;
+        text += '<br />Location: ' + zone.location.lon + ',' + zone.location.lat;
+        L.popup()
+            .setLatLng(zone.location)
+            .setContent(text)
+            .openOn(map);
     }
 
     map.on('click', onMapClick);

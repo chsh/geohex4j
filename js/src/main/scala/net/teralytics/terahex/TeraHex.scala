@@ -7,12 +7,20 @@ import scala.scalajs.js.annotation.{ JSExportAll, JSExport }
 object TeraHex {
 
   private[this] implicit val grid: Grid = Grid(300)
+  private[this] implicit val encoding: Encoding[String] = StringEncoding
 
-  def encode(lon: Double, lat: Double, level: Int): String = "42"
+  def encode(lon: Double, lat: Double, level: Int): String = zoneByLocation(lon, lat, level).code
 
   def zoneByLocation(lon: Double, lat: Double, level: Int): ZoneJs = new ZoneJs(Zone(LatLon(Lon(lon), Lat(lat)), level))
 
   def size(level: Int): Double = grid.size(level)
+}
+
+object StringEncoding extends Encoding[String] {
+
+  override def encode(zone: Zone): String = Encoding.numeric.encode(zone).toString()
+
+  override def decode(code: String): Zone = Encoding.numeric.decode(BigInt(code))
 }
 
 @JSExport("LatLon")
@@ -40,5 +48,5 @@ case class ZoneJs(z: Zone) {
 
   def toWellKnownText: String = z.toWellKnownText
 
-  def code: String = ???
+  def code: String = StringEncoding.encode(z)
 }
