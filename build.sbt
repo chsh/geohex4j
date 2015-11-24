@@ -4,6 +4,31 @@ val mainScalaVersion = "2.11.7"
 
 lazy val npmPublish = taskKey[Unit]("Publish NPM package")
 
+val jsModuleWrapper =
+  (
+    """
+      |(function (global, factory) {
+      |  if (typeof define === "function" && define.amd) {
+      |    define(["exports"], factory);
+      |  } else if (typeof exports !== "undefined") {
+      |    factory(exports);
+      |  } else {
+      |    var mod = {
+      |      exports: {}
+      |    };
+      |    factory(mod.exports);
+      |    global.terahex = mod.exports;
+      |  }
+      |})(this, function (exports) {
+      |
+      |  var scalaExports = {};
+      |  var __ScalaJSEnv = { exportsNamespace: scalaExports };
+    """.stripMargin,
+    """
+      |  var terahex = scalaExports.terahex();
+      |  for (var key in terahex) { exports[key] = terahex[key] }
+      |});""".stripMargin)
+
 lazy val root = project.in(file(".")).
   aggregate(geohexJS, geohexJVM).
   settings(
@@ -30,9 +55,10 @@ lazy val geohex = crossProject.in(file(".")).
     bintrayReleaseOnPublish in ThisBuild := false
   ).
   jsSettings(
+    scalaJSOutputWrapper := jsModuleWrapper,
     npmPublish := {
       "rm -rf npm-tar" #&&
-      "mkdir npm-tar" #&&
+        "mkdir npm-tar" #&&
         s"npm version ${version.value} --force" #&&
         "cp package.json README.md js/target/scala-2.11/geohex-opt.js npm-tar" #&&
         "tar -cf npm.tar npm-tar" #&&

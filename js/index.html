@@ -27,9 +27,6 @@ window.onload=function(){
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var terahex = TeraHex();
-    window.terahex = terahex;
-
     function findRightLevel() {
         var bb = map.getBounds();
         var totalLon = Math.abs(bb.getNorth() - bb.getSouth());

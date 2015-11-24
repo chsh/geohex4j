@@ -1,8 +1,8 @@
 package net.teralytics.terahex
 
-import scala.scalajs.js.annotation.{ JSExport, JSExportAll }
+import scala.scalajs.js.annotation.{ JSName, JSExport, JSExportAll }
 
-@JSExport("TeraHex")
+@JSExport("terahex")
 @JSExportAll
 object TeraHex {
 
@@ -23,8 +23,8 @@ object StringEncoding extends Encoding[String] {
   override def decode(code: String): Zone = Encoding.numeric.decode(BigInt(code))
 }
 
-@JSExport("LatLon")
 @JSExportAll
+@JSName("LatLon")
 case class LatLonJs(lon: Double, lat: Double)
 
 object LatLonJs {
@@ -32,8 +32,8 @@ object LatLonJs {
   def apply(loc: LatLon): LatLonJs = LatLonJs(loc.lon.lon, loc.lat.lat)
 }
 
-@JSExport("Zone")
 @JSExportAll
+@JSName("Zone")
 case class ZoneJs(z: Zone) {
 
   val level: Int = z.level
