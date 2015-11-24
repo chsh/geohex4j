@@ -1,0 +1,23 @@
+{
+  "name": "terahex",
+  "version": "1.2.3",
+  "description": "TeraHex is a geo-hashing scheme inspired by GeoHex with flexible grid sizes and encoders.",
+  "main": "js/target/scala-2.11/geohex-opt.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teralytics/geohex.git"
+  },
+  "keywords": [
+    "geohex",
+    "geo",
+    "location",
+    "hexagon"
+  ],
+  "author": "Sergey Shishkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/teralytics/geohex/issues"
+  },
+  "homepage": "https://github.com/teralytics/geohex#readme"
+}
