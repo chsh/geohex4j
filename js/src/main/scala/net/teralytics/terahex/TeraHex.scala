@@ -18,6 +18,11 @@ object TeraHex {
   def zoneByLocation(lon: Double, lat: Double, level: Int): ZoneJs = new ZoneJs(Zone(LatLon(Lon(lon), Lat(lat)), level))
 
   def size(level: Int): Double = grid.size(level)
+
+  def zonesWithin(fromLon: Double, fromLat: Double, toLon: Double, toLat: Double, level: Int): js.Array[ZoneJs] =
+    Zone.zonesWithin(LatLon(Lon(fromLon), Lat(fromLat)) -> LatLon(Lon(toLon), Lat(toLat)), level)
+      .map(new ZoneJs(_))
+      .toJSArray
 }
 
 object StringEncoding extends Encoding[String] {
