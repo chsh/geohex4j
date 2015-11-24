@@ -1,8 +1,8 @@
 package net.teralytics.terahex
 
-import scala.scalajs.js.annotation.{ JSExportAll, JSExport }
+import scala.scalajs.js.annotation.{ JSExport, JSExportAll }
 
-@JSExport
+@JSExport("TeraHex")
 @JSExportAll
 object TeraHex {
 
@@ -46,7 +46,7 @@ case class ZoneJs(z: Zone) {
 
   def geometry: Seq[LatLonJs] = z.geometry.map(LatLonJs.apply)
 
-  def toWellKnownText: String = z.toWellKnownText
+  def wellKnownText: String = z.toWellKnownText
 
   def code: String = StringEncoding.encode(z)
 }

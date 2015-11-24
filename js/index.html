@@ -27,7 +27,7 @@ window.onload=function(){
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var terahex = net.teralytics.terahex.TeraHex();
+    var terahex = TeraHex();
     window.terahex = terahex;
 
     function findRightLevel() {
@@ -42,7 +42,7 @@ window.onload=function(){
         var loc = e.latlng;
         var level = findRightLevel();
         var zone = terahex.zoneByLocation(loc.lng, loc.lat, level);
-        var hex = omnivore.wkt.parse(zone.toWellKnownText).addTo(map);
+        var hex = omnivore.wkt.parse(zone.wellKnownText).addTo(map);
         var text = 'Code: ' + zone.code;
         text += '<br />Level: ' + zone.level;
         text += '<br />Location: ' + zone.location.lon + ',' + zone.location.lat;
