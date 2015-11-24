@@ -11,6 +11,8 @@ object TeraHex {
   def encode(lon: Double, lat: Double, level: Int): String = "42"
 
   def zoneByLocation(lon: Double, lat: Double, level: Int): ZoneJs = new ZoneJs(Zone(LatLon(Lon(lon), Lat(lat)), level))
+
+  def size(level: Int): Double = grid.size(level)
 }
 
 @JSExport("LatLon")
