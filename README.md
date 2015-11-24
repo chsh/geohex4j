@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/teralytics/geohex.svg?branch=master)](https://travis-ci.org/teralytics/geohex)
 [![Download](https://api.bintray.com/packages/teralytics/maven/geohex/images/download.svg)](https://bintray.com/teralytics/maven/geohex/_latestVersion)
+[![Download](https://img.shields.io/npm/v/terahex.svg)](https://www.npmjs.com/package/terahex)
 
 [GeoHex](http://www.geohex.org) implementation in Scala. Forked from [geohex4j](https://github.com/chsh/geohex4j).
 
