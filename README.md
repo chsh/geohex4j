@@ -60,6 +60,8 @@ Use the functions of the `terahex` object:
 
     function size(level) // Returns hexagon side length in degrees at a given level
 
+    function zonesWithin(fromLon, fromLat, toLon, toLat, level) // Returns an array of Zones within the bounding box
+
 The resulting `Zone` object has properties:
 
     {
