@@ -2,7 +2,6 @@ import scala.language.postfixOps
 
 val mainScalaVersion = "2.11.7"
 
-lazy val npmVersion = taskKey[Unit]("Set NPM package version")
 lazy val npmPublish = taskKey[Unit]("Publish NPM package")
 
 lazy val root = project.in(file(".")).
@@ -31,7 +30,14 @@ lazy val geohex = crossProject.in(file(".")).
     bintrayReleaseOnPublish in ThisBuild := false
   ).
   jsSettings(
-    npmVersion := { s"npm version ${version.value} --force" ! }
+    npmPublish := {
+      "rm -rf npm-tar" #&&
+      "mkdir npm-tar" #&&
+        s"npm version ${version.value} --force" #&&
+        "cp package.json README.md js/target/scala-2.11/geohex-opt.js npm-tar" #&&
+        "tar -cf npm.tar npm-tar" #&&
+        "npm publish npm.tar" !
+    }
   )
 
 lazy val geohexJVM = geohex.jvm
