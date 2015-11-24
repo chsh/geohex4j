@@ -59,7 +59,7 @@ lazy val geohex = crossProject.in(file(".")).
     npmPublish := {
       "rm -rf npm-tar" #&&
         "mkdir npm-tar" #&&
-        s"npm version ${version.value} --force" #&&
+        s"npm version ${version.value} --no-git-tag-version --force" #&&
         "cp package.json README.md js/target/scala-2.11/geohex-opt.js npm-tar" #&&
         "tar -cf npm.tar npm-tar" #&&
         "npm publish npm.tar" !
