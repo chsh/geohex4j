@@ -2,11 +2,11 @@
   "name": "terahex",
   "version": "0.1.0-SNAPSHOT",
   "description": "TeraHex is a geo-hashing scheme inspired by GeoHex with flexible grid sizes and encoders.",
-  "main": "js/target/scala-2.11/geohex-opt.js",
+  "main": "geohex-opt.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/teralytics/geohex.git"
+    "url": "git+https://github.com/teralytics/geohex.git"
   },
   "keywords": [
     "geohex",
