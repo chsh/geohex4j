@@ -1,4 +1,9 @@
+import scala.language.postfixOps
+
 val mainScalaVersion = "2.11.7"
+
+lazy val npmVersion = taskKey[Unit]("Set NPM package version")
+lazy val npmPublish = taskKey[Unit]("Publish NPM package")
 
 lazy val root = project.in(file(".")).
   aggregate(geohexJS, geohexJVM).
@@ -26,6 +31,7 @@ lazy val geohex = crossProject.in(file(".")).
     bintrayReleaseOnPublish in ThisBuild := false
   ).
   jsSettings(
+    npmVersion := { s"npm version ${version.value} --force" ! }
   )
 
 lazy val geohexJVM = geohex.jvm
