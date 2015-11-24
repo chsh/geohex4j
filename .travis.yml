@@ -6,7 +6,7 @@ cache:
     - $HOME/.sbt/boot/
 
 script:
-  - sbt +test +package
+  - sbt +geohexJVM/test geohexJS/fullOptJS +geohexJVM/package
   # Tricks to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
@@ -15,4 +15,4 @@ after_success: >
   test "${TRAVIS_PULL_REQUEST}" = 'false' &&
   test "${TRAVIS_BRANCH}" = 'master' &&
   sh "$TRAVIS_BUILD_DIR/travis_credentials.sh" &&
-  sbt +publish
+  sbt +geohexJVM/publish
