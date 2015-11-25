@@ -53,7 +53,11 @@ case class Zone(rootSize: Double, cells: Seq[Cell]) {
 
   private[this] def move(cellMove: Cell => Cell): Zone =
     if (cells.isEmpty) this
-    else copy(cells = cells.init :+ cellMove(cells.last))
+    else {
+      val cs = cells.init :+ cellMove(cells.last)
+      val loc = copy(cells = cs).location
+      Zone(loc, level)(grid)
+    }
 }
 
 object Zone {

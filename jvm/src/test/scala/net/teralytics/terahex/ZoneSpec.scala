@@ -38,5 +38,12 @@ class ZoneSpec extends FlatSpec with PropertyChecks with Matchers {
       implicit val encoding = Encoding.numeric
       val code = Zone(loc, lev)(TeraHex.grid).code
       code.isValidLong should be(true)
+    }
+
+  it should "encode a bounding box" in {
+    implicit val grid = TeraHex.grid
+    val codes = Zone.zonesWithin(LatLon(Lon(-50), Lat(-50)) -> LatLon(Lon(50), Lat(50)), 5)
+      .map(_.code)
+    codes should contain theSameElementsInOrderAs codes.distinct
   }
 }
