@@ -90,4 +90,17 @@ object Zone {
       we <- towardsEast(sn)
     } yield we
   }
+
+  def zonesBetween(line: (LatLon, LatLon), level: Int)(implicit grid: Grid): Seq[Zone] = {
+    val (from, to) = line
+    val size = grid.size(level)
+    val a = from.toPoint.toHex.toCell(size)
+    val b = to.toPoint.toHex.toCell(size)
+
+    a.pathTo(b)
+      .map(_.toHex(size))
+      .map(_.toPoint)
+      .map(LatLon(_))
+      .map(Zone(_, level))
+  }
 }
