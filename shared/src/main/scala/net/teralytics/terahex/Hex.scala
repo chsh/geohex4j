@@ -31,6 +31,23 @@ case class Point(x: Double, y: Double) {
   */
 case class Cube(x: Double, y: Double, z: Double) {
 
+  def +(other: Cube): Cube = Cube(x + other.x, y + other.y, z + other.z)
+
+  def -(other: Cube): Cube = Cube(x - other.x, y - other.y, z - other.z)
+
+  def scale(k: Double): Cube = Cube(k * x, k * y, k * z)
+
+  def length: Double = max(max(abs(x), abs(y)), abs(z))
+
+  def distanceTo(other: Cube): Double = (other - this).length
+
+  def pathTo(other: Cube, steps: Int): Seq[Cube] =
+    if (steps < 1) Seq(this)
+    else {
+      val step = (other - this).scale(1d / steps)
+      Iterator.iterate(this)(_ + step).take(steps + 1).toSeq
+    }
+
   def round = {
     var (rx, ry, rz) = (x.round, y.round, z.round)
 
@@ -67,11 +84,15 @@ case class Hex(col: Double = 0, row: Double = 0) {
     Cell(col = col.toLong, row.toLong)
   }
 
+  def distanceTo(other: Hex): Double = toCube.distanceTo(other.toCube)
+
+  def pathTo(other: Hex, steps: Int): Seq[Hex] = toCube.pathTo(other.toCube, steps).map(_.toHex)
+
   def toPoint: Point = Point(
     x = 1.5 * col,
     y = sqrt(3) * (row + col / 2))
 
-  def toCell(size: Double): Cell = scale(1d / size).round
+  def toCell(size: Double = 1): Cell = scale(1d / size).round
 }
 
 /**
@@ -79,7 +100,7 @@ case class Hex(col: Double = 0, row: Double = 0) {
   */
 case class Cell(col: Long = 0, row: Long = 0) {
 
-  def toHex(size: Double): Hex = Hex(col = col, row = row).scale(size)
+  def toHex(size: Double = 1): Hex = Hex(col = col, row = row).scale(size)
 
   def moveN: Cell = Cell(col, row - 1)
 
@@ -92,6 +113,14 @@ case class Cell(col: Long = 0, row: Long = 0) {
   def moveNW: Cell = Cell(col - 1, row)
 
   def moveSW: Cell = Cell(col - 1, row + 1)
+
+  def distanceTo(other: Cell): Long = toHex().distanceTo(other.toHex()).round
+
+  def pathTo(other: Cell): Seq[Cell] = {
+    val steps = distanceTo(other).toInt
+    val size = 1
+    toHex(size).pathTo(other.toHex(size), steps).map(_.toCell(size))
+  }
 }
 
 object Cell {

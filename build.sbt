@@ -50,7 +50,8 @@ lazy val geohex = crossProject.in(file(".")).
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.4" % "test",
       "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
-      "io.spray" %% "spray-json" % "1.3.2" % "test"),
+      "io.spray" %% "spray-json" % "1.3.2" % "test",
+      "com.vividsolutions" % "jts" % "1.13" % "test"),
     bintrayOrganization := Some("teralytics")
   ).
   jsSettings(

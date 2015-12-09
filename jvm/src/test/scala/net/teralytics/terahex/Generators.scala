@@ -31,6 +31,13 @@ object Generators {
     lat <- latsDefinedForMercator
   } yield LatLon(Lon(lon), Lat(lat))
 
+  val shortGeoLines = for {
+    a <- latlons.suchThat { case LatLon(Lon(x), Lat(y)) => abs(x) < 170 && abs(y) < 70 }
+    dx <- chooseNum(-0.1, 0.1)
+    dy <- chooseNum(-0.1, 0.1)
+    b = LatLon(Lon(a.lon.lon + dx), Lat(a.lat.lat + dy))
+  } yield (a, b)
+
   val allLevels = 0 to 15
 
   def levels = oneOf(allLevels) :| "level"
