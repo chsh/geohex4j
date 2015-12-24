@@ -159,7 +159,7 @@ public class GeoHex {
         }
 
         for (int i = 0; i <= level + 2; i++) {
-            double h_pow = Math.pow(3, level + 2 - i);
+            double h_pow = Math.round(Math.pow(3, level + 2 - i));
             if (h_decx.get(i) == '0') {
                 h_x -= h_pow;
             } else if (h_decx.get(i) == '2') {
