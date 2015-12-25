@@ -178,8 +178,8 @@ public class GeoHex {
 
     public static final Zone getZoneByXY(double x, double y, int level) {
         double h_size = calcHexSize(level);
-        long h_x = (long) x;
-        long h_y = (long) y;
+        long h_x = Math.round(x);
+        long h_y = Math.round(y);
         double unit_x = 6 * h_size;
         double unit_y = 6 * h_size * h_k;
         double h_lat = (h_k * h_x * unit_x + h_y * unit_y) / 2;
@@ -204,25 +204,26 @@ public class GeoHex {
         List<Integer> code3_y = new ArrayList<Integer>();
         StringBuffer code3 = new StringBuffer();
         StringBuffer code9 = new StringBuffer();
-        long mod_x = (long) h_x;
-        long mod_y = (long) h_y;
+        long mod_x = h_x;
+        long mod_y = h_y;
 
         for (int i = 0; i <= level + 2; i++) {
-            double h_pow = Math.pow(3, level + 2 - i);
-            if (mod_x >= Math.ceil(h_pow / 2)) {
+            long h_pow = Math.round(Math.pow(3, level + 2 - i));
+            double h_pow_half = Math.ceil((double) h_pow / 2);
+            if (mod_x >= h_pow_half) {
                 code3_x.add(2);
                 mod_x -= h_pow;
-            } else if (mod_x <= -Math.ceil(h_pow / 2)) {
+            } else if (mod_x <= -h_pow_half) {
                 code3_x.add(0);
                 mod_x += h_pow;
             } else {
                 code3_x.add(1);
             }
 
-            if (mod_y >= Math.ceil(h_pow / 2)) {
+            if (mod_y >= h_pow_half) {
                 code3_y.add(2);
                 mod_y -= h_pow;
-            } else if (mod_y <= -Math.ceil(h_pow / 2)) {
+            } else if (mod_y <= -h_pow_half) {
                 code3_y.add(0);
                 mod_y += h_pow;
             } else {
