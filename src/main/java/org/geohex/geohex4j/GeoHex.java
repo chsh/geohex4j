@@ -209,20 +209,21 @@ public class GeoHex {
 
         for (int i = 0; i <= level + 2; i++) {
             long h_pow = Math.round(Math.pow(3, level + 2 - i));
-            if (mod_x >= Math.ceil((double) h_pow / 2)) {
+            double h_pow_half = Math.ceil((double) h_pow / 2);
+            if (mod_x >= h_pow_half) {
                 code3_x.add(2);
                 mod_x -= h_pow;
-            } else if (mod_x <= -Math.ceil((double) h_pow / 2)) {
+            } else if (mod_x <= -h_pow_half) {
                 code3_x.add(0);
                 mod_x += h_pow;
             } else {
                 code3_x.add(1);
             }
 
-            if (mod_y >= Math.ceil((double) h_pow / 2)) {
+            if (mod_y >= h_pow_half) {
                 code3_y.add(2);
                 mod_y -= h_pow;
-            } else if (mod_y <= -Math.ceil((double) h_pow / 2)) {
+            } else if (mod_y <= -h_pow_half) {
                 code3_y.add(0);
                 mod_y += h_pow;
             } else {
