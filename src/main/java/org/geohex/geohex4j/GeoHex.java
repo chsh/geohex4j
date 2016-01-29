@@ -2,6 +2,7 @@ package org.geohex.geohex4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /*
@@ -66,6 +67,16 @@ public class GeoHex {
                     new Loc(h_btm, h_cr),
                     new Loc(h_btm, h_cl)
             };
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof Zone && this.code.equals(((Zone)other).code);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.code.hashCode();
         }
     }
 
@@ -302,6 +313,18 @@ public class GeoHex {
             this.x = x;
             this.y = y;
         }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof XY)) return false;
+            final XY otherXy = (XY)other;
+            return  this.x == otherXy.x && this.y == otherXy.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.x, this.y);
+        }
     }
 
     public static final class Loc {
@@ -310,6 +333,18 @@ public class GeoHex {
         public Loc(double lat, double lon) {
             this.lat = lat;
             this.lon = lon;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof Loc)) return false;
+            final Loc otherLoc = (Loc)other;
+            return  this.lat == otherLoc.lat && this.lon == otherLoc.lon;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.lat, this.lon);
         }
     }
 
