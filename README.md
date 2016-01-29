@@ -24,7 +24,7 @@ Currently only #decode, #encode, #getZoneByLocation and #getZoneByCode methods a
 Gradle:
 
 ```
-compile 'org.geohex.geohex4j:geohex4j:3.2.0'
+compile 'org.geohex.geohex4j:geohex4j:3.2.2'
 ```
 
 or simply copy org.geohex.geohex4j.GeoHex.java into your app.

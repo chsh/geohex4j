@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * GeoHex V3 for Java implemented by @chshii is licensed under MIT license.
  */
 public class GeoHex {
-    public static final String VERSION = "3.20";
+    public static final String VERSION = "3.2.2";
     public static final String h_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     public static final double h_base = 20037508.34;
     public static final double h_deg = Math.PI * (30.0 / 180.0);
