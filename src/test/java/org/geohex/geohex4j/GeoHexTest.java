@@ -1,13 +1,18 @@
 package org.geohex.geohex4j;
 
-import java.io.*;
+import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class GeoHexTest {
     private double LOCATION_PRECISION = 0.0000000000001;
@@ -173,6 +178,60 @@ public class GeoHexTest {
             GeoHex.Zone z = GeoHex.getZoneByLocation(lat, lon, level);
             assertEquals(expected_hex_size, z.getHexSize(), LOCATION_PRECISION);
         }
+    }
+
+    @Test
+    public void equalsZone() {
+        GeoHex.Zone zone = GeoHex.getZoneByXY(1, 2, 6);
+        GeoHex.Zone same = GeoHex.getZoneByXY(1, 2, 6);
+        GeoHex.Zone other = GeoHex.getZoneByXY(1, 3, 6);
+        assertTrue(zone.equals(same));
+        assertFalse(zone.equals(other));
+    }
+
+    @Test
+    public void hashCodeZone() {
+        GeoHex.Zone zone = GeoHex.getZoneByXY(1, 2, 6);
+        GeoHex.Zone same = GeoHex.getZoneByXY(1, 2, 6);
+        GeoHex.Zone other = GeoHex.getZoneByXY(1, 3, 6);
+        assertEquals(zone.hashCode(), same.hashCode());
+        assertNotEquals(zone.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void equalsXY() {
+        GeoHex.XY xy = new GeoHex.XY(1, 1);
+        GeoHex.XY same = new GeoHex.XY(1, 1);
+        GeoHex.XY other = new GeoHex.XY(1, 2);
+        assertTrue(xy.equals(same));
+        assertFalse(xy.equals(other));
+    }
+
+    @Test
+    public void hashCodeXY() {
+        GeoHex.XY xy = new GeoHex.XY(1, 1);
+        GeoHex.XY same = new GeoHex.XY(1, 1);
+        GeoHex.XY other = new GeoHex.XY(1, 2);
+        assertEquals(xy.hashCode(), same.hashCode());
+        assertNotEquals(xy.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void equalsLoc() {
+        GeoHex.Loc loc = new GeoHex.Loc(1.f, 1.f);
+        GeoHex.Loc same = new GeoHex.Loc(1.f, 1.f);
+        GeoHex.Loc other = new GeoHex.Loc(1.f, 2.f);
+        assertTrue(loc.equals(same));
+        assertFalse(loc.equals(other));
+    }
+
+    @Test
+    public void hashCodeLoc() {
+        GeoHex.Loc loc = new GeoHex.Loc(1.f, 1.f);
+        GeoHex.Loc same = new GeoHex.Loc(1.f, 1.f);
+        GeoHex.Loc other = new GeoHex.Loc(1.f, 2.f);
+        assertEquals(loc.hashCode(), same.hashCode());
+        assertNotEquals(loc.hashCode(), other.hashCode());
     }
 
     private void assertPolygon(double[][] expected_polygon, GeoHex.Loc[] polygon) {
