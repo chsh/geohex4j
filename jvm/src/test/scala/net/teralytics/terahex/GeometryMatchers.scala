@@ -2,9 +2,11 @@ package net.teralytics.terahex
 
 import com.vividsolutions.jts.geom.Geometry
 import org.scalatest.enablers.Containing
-import org.scalatest.matchers.{ MatchResult, Matcher }
+import org.scalatest.matchers.{MatchResult, Matcher}
+import org.scalatest.words.MatcherWords
 
 trait GeometryMatchers {
+  self: MatcherWords =>
 
   def matcherPrecision: Double = 1e-5
 
@@ -35,4 +37,8 @@ trait GeometryMatchers {
     override def containsNoneOf(container: Geometry, elements: Seq[Any]): Boolean =
       elements.forall(!contains(container, _))
   }
+
+  val fitIntoLatRange: Matcher[Double] = be >= -LatLon.maxLat and be <= LatLon.maxLat
+
+  val fitIntoLonRange: Matcher[Double] = be >= -LatLon.maxLon and be <= LatLon.maxLon
 }

@@ -1,10 +1,10 @@
 package net.teralytics.terahex
 
-import com.vividsolutions.jts.geom.{ GeometryFactory, PrecisionModel }
-import net.teralytics.terahex.GeoConversions._
+import com.vividsolutions.jts.geom.{GeometryFactory, PrecisionModel}
 import net.teralytics.terahex.Generators._
+import net.teralytics.terahex.GeoConversions._
 import org.scalatest.prop.PropertyChecks
-import org.scalatest.{ FlatSpec, Matchers }
+import org.scalatest.{FlatSpec, Matchers}
 
 class PathSpec extends FlatSpec with PropertyChecks with Matchers with GeometryMatchers {
 
@@ -59,4 +59,17 @@ class PathSpec extends FlatSpec with PropertyChecks with Matchers with GeometryM
     }
   }
 
+  it should "gracefully handle locations outside of domain" in
+    forAll(locationsOutsideOfDomain, locationsOutsideOfDomain) { (from, to) =>
+      val locations = Zone.zonesBetween(from -> to, 3)(Grid(300)).map(_.location)
+      all(locations.map(_.lat.lat)) should fitIntoLatRange
+      all(locations.map(_.lon.lon)) should fitIntoLonRange
+    }
+
+  "Hexagon coverage of a bounding box" should "gracefully handle locations outside of domain" in
+    forAll(locationsOutsideOfDomain, locationsOutsideOfDomain) { (from, to) =>
+      val locations = Zone.zonesWithin(from -> to, 3)(Grid(300)).map(_.location)
+      all(locations.map(_.lat.lat)) should fitIntoLatRange
+      all(locations.map(_.lon.lon)) should fitIntoLonRange
+    }
 }
