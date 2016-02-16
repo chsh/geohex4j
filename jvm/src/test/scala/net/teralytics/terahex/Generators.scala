@@ -1,6 +1,5 @@
 package net.teralytics.terahex
 
-import net.teralytics.terahex.hex._
 import org.scalacheck.Gen._
 
 import scala.math._
@@ -24,15 +23,29 @@ object Generators {
 
   def bigEnoughGrid(x: Hex) = Grid(max(max(abs(x.col), abs(x.row)), 1d) * 3)
 
-  val latsDefinedForMercator = chooseNum(-85d, 85d, 0d)
+  val lats = chooseNum(-LatLon.maxLat, LatLon.maxLat, 0d)
 
-  val latlons = for {
-    lon <- chooseNum(-180 + 1e-12, 180d, 0d)
-    lat <- latsDefinedForMercator
+  val lons = chooseNum(-LatLon.maxLon + 1e-12, LatLon.maxLon, 0d)
+
+  val locations = for {
+    lon <- lons
+    lat <- lats
+  } yield LatLon(Lon(lon), Lat(lat))
+
+  val mercatorLats = chooseNum(-LatLon.maxMercatorLat, LatLon.maxMercatorLat, 0d)
+
+  val mercatorLocations = for {
+    lon <- lons
+    lat <- mercatorLats
+  } yield LatLon(Lon(lon), Lat(lat))
+
+  val locationsOutsideOfDomain = for {
+    lon <- chooseNum(-2 * LatLon.maxLon, 2 * LatLon.maxLon)
+    lat <- chooseNum(-2 * LatLon.maxLat, 2 * LatLon.maxLat)
   } yield LatLon(Lon(lon), Lat(lat))
 
   val shortGeoLines = for {
-    a <- latlons.suchThat { case LatLon(Lon(x), Lat(y)) => abs(x) < 170 && abs(y) < 70 }
+    a <- mercatorLocations.suchThat { case LatLon(Lon(x), Lat(y)) => abs(x) < 170 && abs(y) < 70 }
     dx <- chooseNum(-0.1, 0.1)
     dy <- chooseNum(-0.1, 0.1)
     b = LatLon(Lon(a.lon.lon + dx), Lat(a.lat.lat + dy))

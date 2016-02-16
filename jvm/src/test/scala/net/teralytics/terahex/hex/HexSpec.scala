@@ -40,6 +40,6 @@ class HexSpec extends FlatSpec with PropertyChecks with Matchers {
 
     val loc = LatLon(hex.toPoint)
     loc.lon.lon should (be > -180d and be <= 180d)
-    loc.lat.lat should (be > -90d and be <= 90d)
+    loc.lat.lat should (be >= -90d and be <= 90d)
   }
 }
