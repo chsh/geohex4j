@@ -20,6 +20,15 @@ function showZone(map, loc, level) {
         .openOn(map);
 }
 
+function coverBoundingBox(map) {
+    var zones = terahex.zonesWithin(90, -66.51326044311186, 180, 0, 4);
+    zones.forEach(function (z) {
+        omnivore.wkt
+            .parse(z.wellKnownText)
+            .addTo(map);
+    });
+}
+
 window.onload = function() {
 
     var map = L.map('map');
