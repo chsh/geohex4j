@@ -71,16 +71,19 @@ object Zone {
 
   def zonesWithin(boundingBox: (LatLon, LatLon), level: Int)(implicit grid: Grid): Stream[Zone] = {
 
-    val (from, LatLon(Lon(toLon), Lat(toLat))) = LatLon.mercatorBoundingBox(boundingBox)
+    val (from, to) = LatLon.mercatorBoundingBox(boundingBox)
     val start = Zone(from, level)
+    val end = Zone(to, level)
 
     val eastPattern: Seq[Zone => Zone] = Seq(_.moveNE, _.moveSE)
 
-    def notReachedEast(loc: LatLon) = loc.lon.lon - start.size < toLon
+    def notReachedEast(loc: LatLon) =
+      start.location.lon.lon <= loc.lon.lon &&
+        loc.lon.lon <= end.location.lon.lon
 
     def latWithinBounds(loc: LatLon) =
       loc.lat.lat + start.innerRadius > from.lat.lat &&
-      loc.lat.lat - start.innerRadius < toLat
+      loc.lat.lat - start.innerRadius < to.lat.lat
 
     def towardsEast(start: Zone) = Stream
       .continually(eastPattern).flatten
@@ -90,7 +93,7 @@ object Zone {
 
     val towardsNorth = Stream
       .iterate(start)(_.moveN)
-      .takeWhile(_.location.lat.lat - start.innerRadius < toLat)
+      .takeWhile(_.location.lat.lat <= end.location.lat.lat)
 
     for {
       sn <- towardsNorth
