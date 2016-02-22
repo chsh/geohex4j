@@ -20,13 +20,17 @@ function showZone(map, loc, level) {
         .openOn(map);
 }
 
-function coverBoundingBox(map) {
-    var zones = terahex.zonesWithin(90, -66.51326044311186, 180, 0, 4);
+function coverBoundingBox(bbox, level) {
+    var map = window.map;
+    var [[fromLat, fromLon], [toLat, toLon]] = bbox;
+    var zones = terahex.zonesWithin(fromLon, fromLat, toLon, toLat, level);
     zones.forEach(function (z) {
         omnivore.wkt
             .parse(z.wellKnownText)
             .addTo(map);
     });
+    L.rectangle(bbox, {color: "#ff7800", weight: 1}).addTo(map);
+    map.fitBounds(bbox, { padding: [20, 20] });
 }
 
 window.onload = function() {
@@ -46,4 +50,6 @@ window.onload = function() {
     }
 
     map.on('click', onMapClick);
+
+    //coverBoundingBox([[-33, -40], [33, 40]], 3);
 }
