@@ -76,16 +76,21 @@ object Zone {
 
     val eastPattern: Seq[Zone => Zone] = Seq(_.moveNE, _.moveSE)
 
-    def notReachedEast(loc: LatLon) = toLon - loc.lon.lon > start.size
+    def notReachedEast(loc: LatLon) = loc.lon.lon - start.size < toLon
+
+    def latWithinBounds(loc: LatLon) =
+      loc.lat.lat + start.innerRadius > from.lat.lat &&
+      loc.lat.lat - start.innerRadius < toLat
 
     def towardsEast(start: Zone) = Stream
       .continually(eastPattern).flatten
       .scanLeft(start)((z, move) => move(z))
       .takeWhile(z => notReachedEast(z.location))
+      .filter(z => latWithinBounds(z.location))
 
     val towardsNorth = Stream
       .iterate(start)(_.moveN)
-      .takeWhile(_.location.lat.lat < toLat)
+      .takeWhile(_.location.lat.lat - start.innerRadius < toLat)
 
     for {
       sn <- towardsNorth
