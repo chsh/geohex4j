@@ -42,7 +42,7 @@ lazy val geohex = crossProject.in(file(".")).
   settings(
     organization := "net.teralytics",
     name := "geohex",
-    version := "0.1." + sys.env.getOrElse("TRAVIS_BUILD_NUMBER", "0-SNAPSHOT"),
+    version := "0.2." + sys.env.getOrElse("TRAVIS_BUILD_NUMBER", "0-SNAPSHOT"),
     scalaVersion := mainScalaVersion,
     licenses +=("MIT", url("http://opensource.org/licenses/MIT"))
   ).
