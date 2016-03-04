@@ -1,5 +1,6 @@
 package net.teralytics.terahex
 
+import org.scalacheck.Gen
 import org.scalacheck.Gen._
 
 import scala.math._
@@ -75,4 +76,25 @@ object Generators {
     level <- levels
     cells <- listOfN(level, subCells)
   } yield root.copy(cells = cells)
+
+  case class HexagonIdWithLevel(hexagonId: BigInt, level: Int)
+
+  def bigInt(numDigits: Int): Gen[BigInt] =
+    (0 until numDigits).foldLeft(const(BigInt(0))) {
+      (gen, pos) =>
+        for {
+          digit <- choose(0, 9)
+          curr <- gen
+        } yield curr + digit * (Math.pow(10, pos).toLong)
+    }
+
+  val hexagonIdWithLevel = {
+    val gen = for {
+      level <- oneOf(allLevels)
+      root = BigInt(1300 * Math.pow(10, level).toLong)
+      hexIdWithoutRoot <- bigInt(level)
+      hexId = hexIdWithoutRoot + root
+    } yield HexagonIdWithLevel(hexId, level)
+    gen :| "level and hexagonId"
+  }
 }

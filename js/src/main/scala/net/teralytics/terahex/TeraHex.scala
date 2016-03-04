@@ -15,6 +15,8 @@ object TeraHex {
 
   def decode(code: String): ZoneJs = new ZoneJs(Zone(code))
 
+  def level(code: String): Int = encoding.level(code)
+
   def zoneByLocation(lon: Double, lat: Double, level: Int): ZoneJs = new ZoneJs(Zone(LatLon(Lon(lon), Lat(lat)), level))
 
   def size(level: Int): Double = grid.size(level)
@@ -30,6 +32,8 @@ object StringEncoding extends Encoding[String] {
   override def encode(zone: Zone): String = Encoding.numeric.encode(zone).toString()
 
   override def decode(code: String): Zone = Encoding.numeric.decode(BigInt(code))
+
+  override def level(code: String): Int = Encoding.numeric.level(BigInt(code))
 }
 
 @JSExportAll

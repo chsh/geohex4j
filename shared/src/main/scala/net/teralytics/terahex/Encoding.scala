@@ -6,6 +6,8 @@ trait Encoding[Code] {
   def encode(zone: Zone): Code
 
   def decode(code: Code): Zone
+
+  def level(code: Code): Int = decode(code).level
 }
 
 object Encoding {
@@ -45,6 +47,15 @@ object Encoding {
       val (root, subs) = code.toString.splitAt(4)
       val cells = subs.map(ch => dictionary(ch.asDigit))
       decodeRoot(root.toInt).copy(cells = cells)
+    }
+
+    override def level(code: BigInt): Int = {
+      var level = 0
+      val ten = BigInt(10)
+      while (code / (ten pow (level + 4)) > 0) {
+        level += 1
+      }
+      level
     }
   }
 }

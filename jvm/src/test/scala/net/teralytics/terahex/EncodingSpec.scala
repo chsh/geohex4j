@@ -25,4 +25,9 @@ class EncodingSpec extends FlatSpec with PropertyChecks with Matchers {
     val code = Encoding.numeric.encode(zone)
     Encoding.numeric.decode(code) should be(zone)
   }
+
+  it should "calculate the level from an id" in forAll(hexagonIdWithLevel) {
+    case HexagonIdWithLevel(hexagonId, level) =>
+      Encoding.numeric.level(hexagonId) shouldEqual level
+  }
 }
